@@ -32,6 +32,11 @@ if [[ "$BASE_PROVISION_EXTRA" != "" ]]; then
   chmod +x $SCRIPT_DIR/provision/provision.extra.sh
 fi
 
+if [[ "$MASTER_SSH_PUBLIC_KEY" != "" ]]; then
+  mkdir -p $SCRIPT_DIR/provision/ssh/authorized_keys.d
+  cp $MASTER_SSH_PUBLIC_KEY $SCRIPT_DIR/provision/ssh/authorized_keys.d/master.pub
+fi
+
 echo "Building..."
 (
   set -o pipefail

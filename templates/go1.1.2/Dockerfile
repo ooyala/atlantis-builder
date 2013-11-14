@@ -1,8 +1,8 @@
 # Go 1.1.2 Builder Template
 #
-# VERSION 0.0.1
+# VERSION 0.1.0
 
-FROM __REGISTRY_HOST__/builder/__IMAGE__-go1.1.2-0.0.5
+FROM __REGISTRY_HOST__/builder/__IMAGE__-go1.1.2-0.1.0
 MAINTAINER __MAINTAINER__
 
 # set env

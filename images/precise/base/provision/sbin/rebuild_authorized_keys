@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Rebuilds the ~/.ssh/authorized_keys file based on the full contents of all files in
+# ~/.ssh/authorized_keys.d/
+#
+# WARNING: this will OVERWRITE the authorized_keys file completely
+# It won't touch authorized_keys if the authorized_keys.d directory doesn't exist
+#
+
+function regen_authorized_keys ()
+{
+  authorized_keys=$1
+  if [ -d "${authorized_keys}.d" ] && \
+     [ "$(ls "${authorized_keys}.d/" | wc -l)" -gt 0 ] && \
+     [ "$(cat $authorized_keys 2> /dev/null | md5sum -)" != "$(cat ${authorized_keys}.d/* | md5sum -)" ] && \
+     [ ! -z "$(cat ${authorized_keys}.d/* 2> /dev/null)" ]
+  then
+    cat ${authorized_keys}.d/* > ${authorized_keys}.tmp && mv ${authorized_keys}.tmp ${authorized_keys}
+  fi
+}
+
+# If root, regen root
+if [ $(id -u) -eq 0 ]; then
+  regen_authorized_keys /root/.ssh/authorized_keys
+
+# else, regen for the user running it
+else
+  regen_authorized_keys $HOME/.ssh/authorized_keys
+fi

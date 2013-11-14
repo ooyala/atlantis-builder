@@ -1,0 +1,10 @@
+# Java 1.7 Base Image
+#
+# VERSION 0.0.4
+
+FROM __REGISTRY_HOST__/base/precise64-0.0.4
+MAINTAINER __MAINTAINER__
+
+# Install Java 1.7
+RUN apt-get update
+RUN apt-get install -y openjdk-7-jdk

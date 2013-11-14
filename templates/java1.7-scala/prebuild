@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -ex
+
+cd build/app
+sbt assembly
+mkdir -p package/target
+mv target/scala-2.10/*.jar package/target
+rm -rf target
+mv config/ package/config

@@ -1,0 +1,14 @@
+# Ruby 2.0.0 Base Image
+#
+# VERSION 0.0.1
+
+FROM __REGISTRY_HOST__/base/precise64-0.0.4
+MAINTAINER __MAINTAINER__
+
+# Install Ruby and Bundler
+RUN apt-get update
+RUN apt-get install -y build-essential zlib1g-dev libssl-dev libreadline6-dev libyaml-dev curl
+RUN cd /tmp && curl -s http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p247.tar.gz |tar -xz
+RUN cd /tmp/ruby-2.0.0-p247 && ./configure --disable-install-doc --prefix=/usr/local && make && make install
+RUN echo 'gem: --no-ri --no-rdoc' > /root/.gemrc
+RUN gem install bundler

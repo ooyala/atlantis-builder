@@ -19,10 +19,8 @@ RUN bundle install --gemfile /tmp/build/app/Gemfile
 RUN mkdir -p /opt
 RUN mv /tmp/build/app /opt/app
 RUN chown -R user1:user1 /opt/app
-# move log directories to /var/log/
-RUN mv /tmp/build/log/* /var/log/
 # copy runit stuff
-RUN for dir in `find /tmp/build -name "runit*"`; do runitname=$(basename $dir); appdir=$(echo $runitname | sed 's/runit/app/'); mv $dir /etc/sv/$appdir; ln -s /etc/sv/$appdir /etc/service/$appdir; mkdir -p /var/log/$appdir; chown -R user1:user1 /var/log/$appdir; done
+RUN for dir in `find /tmp/build -name "runit*"`; do runitname=$(basename $dir); appdir=$(echo $runitname | sed 's/runit/app/'); mv $dir /etc/sv/$appdir; ln -s /etc/sv/$appdir /etc/service/$appdir; done
 # cleanup
 RUN rm -rf /tmp/build
 ADD etc /tmp/etc

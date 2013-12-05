@@ -172,6 +172,7 @@ sub setup_runit {
 		my $run_cmd = $_;
 
 		my $run_dir = "$app_dir/build/runit$cmdN";
+		mkpath("$run_dir");
 
 		my $app_run_file = slurp($app_template);
 		$app_run_file =~ s#__RUN_COMMAND__#$run_cmd#;

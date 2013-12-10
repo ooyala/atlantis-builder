@@ -263,27 +263,10 @@ create_dockerfile($app_dir, $manifest);
 
 # Run the docker build and push a tag if the build succeeds.
 my $container = "$ENV{'REGISTRY_HOST'}/apps/$manifest->{'name'}-$ARGV[1]";
-
-my $command = "sudo docker build $app_dir";
-open(my $output, "$command |") || die "$command - $!";
-while (<$output>) {
-	my $line = $_;
-
-	# 1st prize in category NOC/ visibility.
-	print $line;
-
-	if ($line =~ /^Error\ build/) {
-		die "Error building container: $_";
-	}
-
-	if (my @capture = $line =~ /^Successfully\ built\ ([0-9a-z]+)$/igs) {
-		print "Done building, pushing @capture as $container.\n";
-		run_commands(
-			"sudo docker tag @capture $container",
-			"sudo docker push $container"
-		);
-	}
-}
+run_commands(
+	"sudo docker build -rm -t \"$container\" $app_dir",
+	"sudo docker push $container"
+);
 
 # -------------------------------------------------------------------
 # TOML - Parser for Tom's Obvious, Minimal Language.

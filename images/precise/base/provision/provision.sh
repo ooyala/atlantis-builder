@@ -25,6 +25,7 @@ mv sbin/* /usr/local/sbin/
 rm -rf sbin
 
 mv etc/sv/* /etc/sv/
+mv etc/atlantis /etc
 
 # Add SSH under runit
 apt-get install -y openssh-server

@@ -181,10 +181,12 @@ sub setup_runit {
 		chmod 0755, "$run_dir/run";
 
 		# Write out rsyslog config
-		my $syslog_dir = "/var/log/atlantis/syslog/app${cmdN}/%\$YEAR%/%\$MONTH%/%\$DAY%";
-		push @container_conf, qq(\$template App${cmdN}Info,"${syslog_dir}/info.log");
-		push @container_conf, qq(\$template App${cmdN}Error,"${syslog_dir}/error.log");
-		push @container_conf, qq(\$template App${cmdN}All,"${syslog_dir}/all.log");
+		my $syslog_dir = "/var/log/atlantis/syslog/app${cmdN}";
+		my $m10 = 10*1024*1024;
+		my $logrot = "/etc/atlantis/logrot"
+		push @container_conf, qq(\$outchannel App${cmdN}Info,${syslog_dir}/info.log,${m10},${logrot});
+		push @container_conf, qq(\$outchannel App${cmdN}Error,${syslog_dir}/error.log,${m10},${logrot});
+		push @container_conf, qq(\$outchannel App${cmdN}All,${syslog_dir}/all.log,${m10},${logrot});
 		push @container_conf, "";
 		push @container_conf, "local${cmdN}.=info -?App${cmdN}Info";
 		push @container_conf, "local${cmdN}.=error -?App${cmdN}Error";

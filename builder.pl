@@ -11,6 +11,7 @@ use File::Copy qw(copy);
 use File::Path;
 use File::Temp;
 
+use Carp;
 use Carp::Always;
 
 my $home = dirname(realpath($0));

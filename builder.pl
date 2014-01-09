@@ -11,6 +11,8 @@ use File::Copy qw(copy);
 use File::Path;
 use File::Temp;
 
+use Carp:Always;
+
 my $home = dirname(realpath($0));
 
 # Save script start time for reports in case of failure.

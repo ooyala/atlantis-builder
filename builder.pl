@@ -12,7 +12,7 @@ use File::Path;
 use File::Temp;
 
 use Carp;
-# $SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
+$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 my $home = dirname(realpath($0));
 

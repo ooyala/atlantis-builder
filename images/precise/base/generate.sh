@@ -46,13 +46,13 @@ echo "Building..."
   fi
 )
 ID=`tail -1 docker_build.log | awk '{print $3;}'`
-sudo docker tag $ID $REGISTRY_HOST/base/precise64-$VERSION
+sudo docker tag $ID $REGISTRY_HOST/base/precise64:$VERSION
 
 if [[ "$2" == "-p" ]]; then
   echo "Pushing..."
-  sudo docker push $REGISTRY_HOST/base/precise64-$VERSION
+  sudo docker push $REGISTRY_HOST/base/precise64:$VERSION
   echo "Done."
 else
   echo "Done. To push the new image:"
-  echo "sudo docker push $REGISTRY_HOST/base/precise64-$VERSION"
+  echo "sudo docker push $REGISTRY_HOST/base/precise64:$VERSION"
 fi

@@ -3,7 +3,7 @@
 set -e
 
 # This is the version with which to tag the image, rev each new build
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 

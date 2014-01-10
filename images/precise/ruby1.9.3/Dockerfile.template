@@ -1,8 +1,8 @@
 # Ruby 1.9.3 Base Image
 #
-# VERSION 0.1.0
+# VERSION 0.1.1
 
-FROM __REGISTRY_HOST__/base/precise64-0.1.0
+FROM __REGISTRY_HOST__/base/precise64-0.1.1
 MAINTAINER __MAINTAINER__
 
 # Install Ruby and Bundler

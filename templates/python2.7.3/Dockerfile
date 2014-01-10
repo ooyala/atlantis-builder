@@ -1,8 +1,8 @@
 # python 2.7.3 Builder Template
 #
-# VERSION 0.1.0
+# VERSION 0.1.1
 
-FROM __REGISTRY_HOST__/builder/__IMAGE__-python2.7.3-0.1.0
+FROM __REGISTRY_HOST__/builder/__IMAGE__-python2.7.3-0.1.1
 MAINTAINER __MAINTAINER__
 
 # add app source

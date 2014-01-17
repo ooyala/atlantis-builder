@@ -43,7 +43,7 @@ mkdir /etc/sv/rsyslog
 ln -s /etc/sv/rsyslog /etc/service
 
 # Add convenience packages
-apt-get -y install curl man-db telnet wget screen tmux tree less strace traceroute ngrep tcpdump
+apt-get -y install curl man-db telnet wget screen tmux tree less strace traceroute ngrep tcpdump vim
 
 rm -rf etc
 

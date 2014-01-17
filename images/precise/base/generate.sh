@@ -45,7 +45,13 @@ echo "Building..."
     exit 1
   fi
 )
-ID=`tail -2 docker_build.log | head -1 | awk '{print $3;}'`
+
+line=`tail -1 docker_build.log`
+if [[ ! $line =~ [^[:space:]] ]] ; then
+	line=`tail -2 docker_build.log | head -1`
+fi
+ID=`echo $line | awk '{print $3;}'`
+
 sudo docker tag $ID $REGISTRY_HOST/base/precise64-$VERSION
 
 if [[ "$2" == "-p" ]]; then

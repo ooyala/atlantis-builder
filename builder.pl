@@ -191,9 +191,9 @@ sub setup_runit {
 		push @container_conf, qq(\$outchannel App${cmdN}Error,${syslog_dir}/error.log,${m10},${logrot});
 		push @container_conf, qq(\$outchannel App${cmdN}All,${syslog_dir}/all.log,${m10},${logrot});
 		push @container_conf, "";
-		push @container_conf, "local${cmdN}.=info -?App${cmdN}Info";
-		push @container_conf, "local${cmdN}.=error -?App${cmdN}Error";
-		push @container_conf, "local${cmdN}.* -?App${cmdN}All";
+		push @container_conf, "local${cmdN}.=info :omfile:$App${cmdN}Info";
+		push @container_conf, "local${cmdN}.=error :omfile:$App${cmdN}Error";
+		push @container_conf, "local${cmdN}.* :omfile:$App${cmdN}All";
 		push @container_conf, "";
 
 		$cmdN += 1;

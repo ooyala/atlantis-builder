@@ -26,6 +26,11 @@ rm -rf sbin
 
 mv etc/sv/* /etc/sv/
 mv etc/atlantis /etc
+# Make config directory
+mkdir -p /etc/atlantis/config
+chown -R root:root /etc/atlantis
+chown -R root:root /etc/sv
+
 
 # Add SSH under runit
 apt-get install -y openssh-server
@@ -41,6 +46,8 @@ apt-get install -y rsyslog
 mv etc/rsyslog.conf /etc
 mkdir /etc/sv/rsyslog
 ln -s /etc/sv/rsyslog /etc/service
+# make log directory
+mkdir -p /var/log/atlantis/syslog
 
 # Add convenience packages
 apt-get -y install curl man-db telnet wget screen tmux tree less strace traceroute ngrep tcpdump vim

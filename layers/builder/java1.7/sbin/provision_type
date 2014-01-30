@@ -1,0 +1,9 @@
+#!/bin/bash -ex
+exec > /sbin/provision_type.log 2>&1
+
+OVERLAY=$1
+cp -dR --preserve=mode $OVERLAY/* /
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y openjdk-7-jdk

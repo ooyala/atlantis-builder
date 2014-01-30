@@ -1,0 +1,6 @@
+[submodule "vendor/src/github.com/fsouza/go-dockerclient"]
+	path = vendor/src/github.com/fsouza/go-dockerclient
+	url = https://github.com/fsouza/go-dockerclient
+[submodule "vendor/src/github.com/BurntSushi/toml"]
+	path = vendor/src/github.com/BurntSushi/toml
+	url = https://github.com/BurntSushi/toml

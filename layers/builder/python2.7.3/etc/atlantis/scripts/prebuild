@@ -1,0 +1,5 @@
+#!/bin/bash -ex
+
+exec > /etc/atlantis/scripts/prebuild.log 2>&1
+
+echo "nothing to prebuild"

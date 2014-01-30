@@ -1,0 +1,30 @@
+#!/bin/bash -x
+
+if ! [ $(id -u) -eq 0 ]; then
+    echo "Please run as root."
+    exit 0
+fi
+
+WORKING="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source $WORKING/config
+
+# Download the image we'll use as base.
+if ! [ $(md5sum $IMAGE_LOC | awk '{print $1}') = $IMAGE_MD5 ]; then
+    echo "Image checksum did not match!"
+    exit 0
+fi
+
+# Extract files from the image.
+mkdir -p /tmp/precise
+tar -C /tmp/precise -xf $IMAGE_LOC
+
+# Run the provisioning script.
+cp -dR --preserve=mode $WORKING/base/. /tmp/precise/
+chroot /tmp/precise /bin/bash -c "su - -c /sbin/provision"
+
+# Push the image to docker registry.
+tar -C /tmp/precise -c . | docker import - $REGISTRY/base/$VERSION
+docker push $REGISTRY/base/$VERSION
+
+# Cleanup
+rm -rf /tmp/precise

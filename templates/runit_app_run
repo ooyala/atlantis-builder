@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd /opt/app
-{ exec chpst -u user1 __RUN_COMMAND__ | logger -p __APP_FACILITY__.info; } 2>&1 | logger -p __APP_FACILITY__.error

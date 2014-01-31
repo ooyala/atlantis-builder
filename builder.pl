@@ -188,7 +188,7 @@ sub setup_runit {
 		my $m10 = 10*1024*1024;
 		my $logrot = "/etc/atlantis/logrot";
 		
-		push @container_conf, qq(\$template logFormat,"%msg%\n");
+		push @container_conf, qq(\$template logFormat,"%msg%\\n");
 		push @container_conf, "\$ActionFileDefaultTemplate logFormat";
 
 		push @container_conf, qq(\$outchannel App${cmdN}Info,${syslog_dir}/info.log,${m10},${logrot});

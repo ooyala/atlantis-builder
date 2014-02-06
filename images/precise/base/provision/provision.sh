@@ -60,7 +60,7 @@ ln -s /etc/sv/rsyslog /etc/service
 mkdir -p /var/log/atlantis/syslog
 
 # Add convenience packages
-apt-get -y install curl man-db telnet wget screen tmux tree less strace traceroute ngrep tcpdump vim
+apt-get -y install build-essential curl man-db telnet wget screen tmux tree less strace traceroute ngrep tcpdump vim
 
 rm -rf etc
 

@@ -30,7 +30,7 @@ RUN mkdir -p /opt
 RUN mv /tmp/build/app /opt/app
 RUN chown -R user1:user1 /opt/app
 # copy runit stuff
-RUN for dir in `find /tmp/build -name -maxdepth 1 "runit*"`; do runitname=$(basename $dir); appdir=$(echo $runitname | sed 's/runit/app/'); mv $dir /etc/sv/$appdir; ln -s /etc/sv/$appdir /etc/service/$appdir; done
+RUN for dir in `find /tmp/build -maxdepth 1 -name "runit*"`; do runitname=$(basename $dir); appdir=$(echo $runitname | sed 's/runit/app/'); mv $dir /etc/sv/$appdir; ln -s /etc/sv/$appdir /etc/service/$appdir; done
 # cleanup
 RUN rm -rf /tmp/build
 ADD etc /tmp/etc

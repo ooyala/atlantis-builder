@@ -201,8 +201,8 @@ sub setup_runit {
 		push @container_conf, qq(\$template logFormat,"%msg%\\n");
 		push @container_conf, "\$ActionFileDefaultTemplate logFormat";
 
-		push @container_conf, qq(\$outchannel App${cmdN}Info,${syslog_dir}/info.log,${m10},${logrot});
-		push @container_conf, qq(\$outchannel App${cmdN}Error,${syslog_dir}/error.log,${m10},${logrot});
+		push @container_conf, qq(\$outchannel App${cmdN}Info,${syslog_dir}/stdout.log,${m10},${logrot});
+		push @container_conf, qq(\$outchannel App${cmdN}Error,${syslog_dir}/stderr.log,${m10},${logrot});
 		push @container_conf, qq(\$outchannel App${cmdN}All,${syslog_dir}/all.log,${m10},${logrot});
 		push @container_conf, "";
 		push @container_conf, "local${cmdN}.=info :omfile:\$App${cmdN}Info";

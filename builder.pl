@@ -194,7 +194,7 @@ sub setup_runit {
 		chmod 0755, "$run_dir/run";
 
 		# Write out rsyslog config
-		my $syslog_dir = "/var/log/atlantis/syslog/app${cmdN}";
+		my $syslog_dir = "/var/log/atlantis/app${cmdN}";
 		my $m10 = 10*1024*1024;
 		my $logrot = "/etc/atlantis/logrot";
 		

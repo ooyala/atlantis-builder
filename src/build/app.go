@@ -20,7 +20,7 @@ import (
 // the deferred clean up functions in main() to execute before the program dies.
 
 func copyApp(overlayDir, sourceDir string) {
-	appDir := path.Join(overlayDir, "src")
+	appDir := path.Join(overlayDir, "/src")
 	if err := os.MkdirAll(appDir, 0700); err != nil {
 		panic(err)
 	}
@@ -60,16 +60,20 @@ func copyApp(overlayDir, sourceDir string) {
 
 func writeConfigs(overlayDir string, manifest manifest.Data) {
 	for idx, cmd := range manifest.RunCommands {
-		// create /etc/sv/runit0
-		relPath := fmt.Sprintf("/etc/sv/runit%d", idx)
+		// create /etc/sv/app0
+		relPath := fmt.Sprintf("/etc/sv/app%d", idx)
 		absPath := path.Join(overlayDir, relPath)
 		if err := os.MkdirAll(absPath, 0700); err != nil {
 			panic(err)
 		}
 
-		// write /etc/sv/runit0/run
+		// write /etc/sv/app0/run
 		absPath = path.Join(absPath, "run")
 		template.WriteRunitScript(absPath, cmd, idx)
+		// symlink /etc/service/app0
+		if err := os.Symlink(relPath, fmt.Sprintf("/etc/service/app%d", idx)); err != nil {
+			panic(err)
+		}
 	}
 
 	// create /etc/rsyslog.d

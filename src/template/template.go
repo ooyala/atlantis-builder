@@ -7,7 +7,7 @@ import (
 
 const RunitTemplate = `#!/bin/bash
 cd /app
-{exec chpst -u user1 {{.Cmd}} | logger -p local{{.Num}}.info; } 2>&1 | logger -p local{{.Num}}.error
+{ exec chpst -u user1 {{.Cmd}} | logger -p local{{.Num}}.info; } 2>&1 | logger -p local{{.Num}}.error
 `
 
 type CmdAndNum struct {

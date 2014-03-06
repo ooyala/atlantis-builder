@@ -27,13 +27,14 @@ func WriteRunitScript(path string, cmd string, idx int) {
 }
 
 const RsyslogTemplate = `# config for app{{.}}
-$outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/info.log,10485760,/etc/logrot
-$outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/error.log,10485760,/etc/logrot
-$outchannel app{{.}}All,/var/log/atlantis/app{{.}}/all.log,10485760,/etc/logrot
+$template			logFormat,"%msg%\n"
+$ActionFileDefaultTemplate	logFormat
+
+$outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/stdout.log,10485760,/etc/logrot
+$outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/logrot
 
 local{{.}}.=info  :omfile:$app{{.}}Info
 local{{.}}.=error :omfile:$app{{.}}Error
-local{{.}}.*	  :omfile:$app{{.}}All
 `
 
 func WriteRsyslogConfig(path string, idx int) {

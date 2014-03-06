@@ -5,6 +5,7 @@ OVERLAY=$1
 cp -dR --preserve=mode $OVERLAY/* /
 
 pushd /src && /etc/atlantis/scripts/setup && popd
+pushd /etc/service && ln -s /etc/sv/app* . && popd
 
 test -d /src/check_mk_checks && mv /src/check_mk_checks / 
 mv /src /app

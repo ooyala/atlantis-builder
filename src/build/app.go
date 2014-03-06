@@ -70,10 +70,6 @@ func writeConfigs(overlayDir string, manifest manifest.Data) {
 		// write /etc/sv/app0/run
 		absPath = path.Join(absPath, "run")
 		template.WriteRunitScript(absPath, cmd, idx)
-		// symlink /etc/service/app0
-		if err := os.Symlink(relPath, fmt.Sprintf("/etc/service/app%d", idx)); err != nil {
-			panic(err)
-		}
 	}
 
 	// create /etc/rsyslog.d

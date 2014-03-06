@@ -1,3 +1,0 @@
-create and push the image by doing this within this directory:
-
-./generate.sh <config.sh> -p

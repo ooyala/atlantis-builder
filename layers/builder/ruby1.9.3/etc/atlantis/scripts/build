@@ -1,0 +1,16 @@
+#!/bin/bash -ex
+exec > /etc/atlantis/scripts/build.log 2>&1
+
+OVERLAY=$1
+cp -dR --preserve=mode $OVERLAY/* /
+
+pushd /src && /etc/atlantis/scripts/setup && popd
+pushd /etc/service && ln -s /etc/sv/app* . && popd
+
+test -d /src/check_mk_checks mv /src/check_mk_checks /
+mv /src /app
+
+bundler install --gemfile /app/Gemfile
+chown -R user1:user1 /app
+
+echo "done building app"

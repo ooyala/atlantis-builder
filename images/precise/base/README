@@ -1,3 +1,0 @@
-to build and push this image:
-
-./generate.sh <config.sh> -p

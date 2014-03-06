@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+exec > /sbin/provision.log 2>&1
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Add apt sources
+echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu/ precise-updates main restricted" > /etc/apt/sources.list.d/precise-update.list
+apt-get update
+
+# Install runit
+apt-get install -y runit 
+
+# Add SSH under runit
+apt-get install -y openssh-server
+ln -s /etc/sv/sshd /etc/service/
+
+# Add rsyslog under runit
+apt-get install -y rsyslog
+ln -s /etc/sv/rsyslog /etc/service
+
+# Add convenience packages
+apt-get -y install curl telnet screen less strace mtr tcpdump vim
+
+# Add app user
+useradd -d /home/user1 -m -s /bin/bash user1
+
+# run provision-custom if it exists
+if [ -x "/sbin/provision-custom" ]; then
+	exec /sbin/provision-custom
+fi
+
+echo "done provisioning base"

@@ -116,8 +116,8 @@ func writeInfo(overlayDir string, gitInfo git.Info) {
 	}
 }
 
-func runJavaPrebuild(overlayDir, javaType string) {
-	if err := os.Chdir(overlayDir); err != nil {
+func runJavaPrebuild(sourceDir, javaType string) {
+	if err := os.Chdir(sourceDir); err != nil {
 		panic(err)
 	}
 	switch javaType {
@@ -167,5 +167,8 @@ func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Laye
 	writeInfo(overlayDir, gitInfo)
 	writeConfigs(overlayDir, manifest)
 
+	if manifest.AppType == "java1.7" {
+		runJavaPrebuild(overlayDir, manifest.JavaType)
+	}
 	client.OverlayAndCommit(builderLayer, appDockerName, overlayDir, "/overlay", 5*time.Minute, "/etc/atlantis/scripts/build", "/overlay")
 }

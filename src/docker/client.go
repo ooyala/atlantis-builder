@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-
 type Client struct {
 	URL    string
 	client *docker.Client

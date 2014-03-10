@@ -11,8 +11,8 @@ type Data struct {
 	Name          string   `toml:"name"`
 	Description   string   `toml:"description"`
 	Internal      bool     `toml:"internal"`
-	Image         string   `toml:"image"`
 	AppType       string   `toml:"app_type"`
+	JavaType      string   `toml:"java_type"`
 	RunCommands   []string `toml:"run_commands"`
 	Dependencies  []string `toml:"dependencies"`
 	SetupCommands []string `toml:"setup_commands"`

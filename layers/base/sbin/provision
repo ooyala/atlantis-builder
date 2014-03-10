@@ -9,7 +9,7 @@ echo "deb http://archive.ubuntu.com/ubuntu/ precise-updates main restricted" > /
 apt-get update
 
 # Install runit
-apt-get install -y runit 
+apt-get install -y runit
 
 # Add SSH under runit
 apt-get install -y openssh-server

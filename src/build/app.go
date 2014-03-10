@@ -9,11 +9,13 @@ import (
 	"io/ioutil"
 	"manifest"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
 	"template"
 	"time"
+	"util"
 )
 
 // NOTE(manas) This programs panics in places you'd expect it to call log.Fatal(). The panic allows
@@ -85,7 +87,7 @@ func writeConfigs(overlayDir string, manifest manifest.Data) {
 	}
 
 	// create /etc/atlantis/scripts
-	if err := os.MkdirAll(path.Join(overlayDir, "etc/atlantis/scripts"), 0700); err != nil {
+	if err := os.MkdirAll(path.Join(overlayDir, "/etc/atlantis/scripts"), 0700); err != nil {
 		panic(err)
 	}
 
@@ -111,6 +113,20 @@ func writeInfo(overlayDir string, gitInfo git.Info) {
 	timestr := time.Now().UTC().Format(time.RFC822)
 	if err := ioutil.WriteFile(path.Join(infoDir, "build_utc"), []byte(timestr), 0644); err != nil {
 		panic(err)
+	}
+}
+
+func runJavaPrebuild(overlayDir, javaType string) {
+	if err := os.Chdir(overlayDir); err != nil {
+		panic(err)
+	}
+	switch javaType {
+	case "scala":
+		cmd := exec.Command("sbt", "assembly")
+		util.EchoExec(cmd)
+	case "maven":
+		cmd := exec.Command("mvn", "build")
+		util.EchoExec(cmd)
 	}
 }
 

@@ -1,28 +1,11 @@
 package git
 
 import (
-	"bytes"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
+	"util"
 )
-
-func echoExec(cmd *exec.Cmd) []byte {
-	// make streaming copies of stdout
-	var buf bytes.Buffer
-	outWriter := io.MultiWriter(&buf, os.Stdout)
-
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = outWriter
-
-	if err := cmd.Start(); err != nil {
-		panic(err)
-	}
-	cmd.Wait()
-
-	return buf.Bytes()
-}
 
 type Info struct {
 	Commit  string   `json:"commit"`
@@ -36,16 +19,16 @@ func Checkout(url, sha, path string) Info {
 	}
 
 	cmd := exec.Command("git", "init")
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	cmd = exec.Command("git", "remote", "add", "origin", url)
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	cmd = exec.Command("git", "remote", "update")
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	cmd = exec.Command("git", "rev-list", "--all")
-	out := echoExec(cmd)
+	out := util.EchoExec(cmd)
 
 	var found bool
 	for _, s := range strings.Split(string(out), "\n") {
@@ -59,21 +42,21 @@ func Checkout(url, sha, path string) Info {
 	}
 
 	cmd = exec.Command("git", "fetch", "origin", sha)
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	cmd = exec.Command("git", "reset", "--hard", sha)
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	cmd = exec.Command("git", "show-branch", "--list")
-	out = echoExec(cmd)
+	out = util.EchoExec(cmd)
 	commit := strings.Split(string(out), "\n")[0]
 
 	cmd = exec.Command("git", "log", "--pretty=format:'%H'")
-	out = echoExec(cmd)
+	out = util.EchoExec(cmd)
 	revlist := strings.Split(string(out), "\n")
 
 	cmd = exec.Command("git", "submodule", "update", "--init")
-	echoExec(cmd)
+	util.EchoExec(cmd)
 
 	return Info{
 		Commit:  commit,

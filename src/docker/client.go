@@ -3,9 +3,12 @@ package docker
 import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
+	"os"
 	"path"
 	"time"
 )
+
+var LogOutput bool
 
 type Client struct {
 	URL    string
@@ -42,6 +45,10 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 			bindTo: struct{}{},
 		},
 	}
+	if LogOutput && false {
+		containerConfig.AttachStdout = true
+	}
+
 	hostConfig := &docker.HostConfig{
 		Privileged: true,
 		Binds: []string{
@@ -65,6 +72,17 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 	}()
 
 	if err = c.client.StartContainer(container.ID, hostConfig); err != nil {
+		panic(err)
+	}
+
+	attachOptions := docker.AttachToContainerOptions{
+		Container:    container.ID,
+		OutputStream: os.Stdout,
+		Stdout:       true,
+		Stream:       true,
+	}
+
+	if err = c.client.AttachToContainer(attachOptions); err != nil {
 		panic(err)
 	}
 

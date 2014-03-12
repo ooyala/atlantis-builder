@@ -30,6 +30,7 @@ func main() {
 	if *boot {
 		build.Boot(client, layers)
 	} else {
+		docker.LogOutput = true
 		if *url == "" || *sha == "" || *rel == "" {
 			panic("provide url, sha and rel path!")
 		}

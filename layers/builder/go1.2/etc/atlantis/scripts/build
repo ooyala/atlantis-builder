@@ -1,5 +1,6 @@
 #!/bin/bash -ex
-exec > /etc/atlantis/scripts/build.log 2>&1
+exec | tee /etc/atlantis/scripts/build.log
+exec 2>&1
 
 OVERLAY=$1
 cp -dR --preserve=mode $OVERLAY/* /

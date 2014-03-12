@@ -45,10 +45,6 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 			bindTo: struct{}{},
 		},
 	}
-	if LogOutput && false {
-		containerConfig.AttachStdout = true
-	}
-
 	hostConfig := &docker.HostConfig{
 		Privileged: true,
 		Binds: []string{
@@ -75,15 +71,17 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 		panic(err)
 	}
 
-	attachOptions := docker.AttachToContainerOptions{
-		Container:    container.ID,
-		OutputStream: os.Stdout,
-		Stdout:       true,
-		Stream:       true,
-	}
+	if LogOutput {
+		attachOptions := docker.AttachToContainerOptions{
+			Container:    container.ID,
+			OutputStream: os.Stdout,
+			Stdout:       true,
+			Stream:       true,
+		}
 
-	if err = c.client.AttachToContainer(attachOptions); err != nil {
-		panic(err)
+		if err = c.client.AttachToContainer(attachOptions); err != nil {
+			panic(err)
+		}
 	}
 
 	result := make(chan int)

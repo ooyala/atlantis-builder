@@ -1,9 +1,0 @@
-VERSION="precise64-0.2.0"
-
-IMAGE_LOC="/disks/vda/images/base.tgz"
-IMAGE_MD5="9ebe4fc75cde14d0825c4a450387d8c3"
-
-if [ -z $REGISTRY ]; then
-    echo "REGISTRY does not exist in environment!"
-    exit 0
-fi

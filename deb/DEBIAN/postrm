@@ -1,2 +1,2 @@
 #!/bin/bash -e
-rm /usr/bin/sbt-launch.jar
+rm -f /usr/bin/sbt-launch.jar

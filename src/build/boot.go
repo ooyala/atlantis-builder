@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-const overlayDir = "/opt/atlantis/builder/layers/builder"
-
 type Layers struct {
 	Version       string
 	BaseLayer     string
@@ -34,16 +32,17 @@ func (l *Layers) BaseLayerName() string {
 	return fmt.Sprintf("base/%s-%s", l.BaseLayer, l.Version)
 }
 
-func Boot(client *docker.Client, layers *Layers) {
+func Boot(client *docker.Client, overlayDir string, layers *Layers) {
 	fmt.Println("Now building ...")
 	var wg sync.WaitGroup
 
+	builderLayers := path.Join(overlayDir, "builder")
 	for _, appType := range layers.BuilderLayers {
 		wg.Add(1)
 		go func(myType string) {
-			fmt.Println("\tstart " + myType)
-			client.OverlayAndCommit(layers.BaseLayerName(), layers.builderLayerName(myType), path.Join(overlayDir, myType), "/overlay", 10*time.Minute, "/overlay/sbin/provision_type", "/overlay")
-			fmt.Println("\tdone " + myType)
+			fmt.Printf("\tstart %s -> %s\n", layers.BaseLayerName(), layers.builderLayerName(myType))
+			client.OverlayAndCommit(layers.BaseLayerName(), layers.builderLayerName(myType), path.Join(builderLayers, myType), "/overlay", 10*time.Minute, "/overlay/sbin/provision_type", "/overlay")
+			fmt.Printf("\tdone %s\n ", layers.builderLayerName(myType))
 			wg.Done()
 		}(appType)
 	}

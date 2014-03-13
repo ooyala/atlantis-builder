@@ -1,0 +1,51 @@
+#!/bin/bash -ex
+
+OVERLAY_DIR="/opt/atlantis/builder/layers"
+
+usage() { echo "Usage: $0 -f <base_image_tgz> [-p <path_to_layers> ]"; exit 1; }
+
+while getopts ":p:f:" o; do
+	case "${o}" in
+		p)
+			OVERLAY_DIR=${OPTARG}
+			;;
+		f)
+			IMPORT_IMAGE=${OPTARG}
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+
+if [ -z $OVERLAY_DIR ] || [ -z $IMPORT_IMAGE ]; then
+	usage
+fi
+
+if [ -z $REGISTRY ]; then
+	echo "REGISTRY not in environment!"
+	exit 1
+fi
+
+if ! [ $(id -u) -eq 0 ]; then
+    echo "please run as root!"
+    exit 1
+fi
+
+# The base image is names ex: precise64-0.2.0
+IMAGE_NAME=$(cat $OVERLAY_DIR/basename.txt)-$(cat $OVERLAY_DIR/version.txt)
+
+# Extract files from the image.
+mkdir -p /tmp/base
+tar -C /tmp/base -xf $IMPORT_IMAGE
+
+# Run the provisioning script.
+cp -dR --preserve=mode $OVERLAY_DIR/base/. /tmp/base/
+chroot /tmp/base /bin/bash -c "su - -c /sbin/provision"
+
+# Push the image to docker registry.
+tar -C /tmp/base -c . | docker import - $REGISTRY/base/$IMAGE_NAME
+docker push $REGISTRY/base/$IMAGE_NAME
+
+# Cleanup
+rm -rf /tmp/base

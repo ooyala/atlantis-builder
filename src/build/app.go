@@ -140,7 +140,12 @@ func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Laye
 	gitInfo := git.Checkout(buildURL, buildSha, cloneDir)
 
 	sourceDir := path.Join(cloneDir, relPath)
-	manifest := manifest.New(sourceDir)
+
+	fname := path.Join(sourceDir, "manifest.toml")
+	if _, err := os.Stat(fname); os.IsNotExist(err) {
+		panic(err)
+	}
+	manifest := manifest.Read(fname)
 
 	builderLayer, err := layers.BuilderLayerName(manifest.AppType)
 	if err != nil {

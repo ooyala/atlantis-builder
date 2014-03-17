@@ -1,8 +1,7 @@
 package manifest
 
 import (
-	"os"
-	"path"
+	"strings"
 	// vendored packages
 	"github.com/BurntSushi/toml"
 )
@@ -18,18 +17,40 @@ type Data struct {
 	SetupCommands []string `toml:"setup_commands"`
 	CpuShares     uint     `toml:"cpu_shares"`
 	MemoryLimit   uint     `toml:"memory_limit"`
+
+	// FIXME(manas) Deprecated, TBD.
+	RunCommand interface{} `toml:"run_command"`
 }
 
-func New(sourceDir string) Data {
-	fname := path.Join(sourceDir, "manifest.toml")
-	if _, err := os.Stat(fname); os.IsNotExist(err) {
-		panic(err)
-	}
-
+func Read(fname string) Data {
 	var manifest Data
 	if _, err := toml.DecodeFile(fname, &manifest); err != nil {
 		panic(err)
 	}
 
+	fixCompat(&manifest)
 	return manifest
+}
+
+func fixCompat(manifest *Data) {
+	app_type := strings.Split(manifest.AppType, "-")
+	if app_type[0] == "java1.7" && len(app_type) > 1 {
+		manifest.AppType = app_type[0]
+		manifest.JavaType = app_type[1]
+	}
+
+	if manifest.RunCommands != nil && len(manifest.RunCommands) > 0 {
+		return
+	}
+
+	switch runCommands := manifest.RunCommand.(type) {
+	case string:
+		manifest.RunCommands = []string{runCommands}
+	case []interface{}:
+		manifest.RunCommands = []string{}
+		for _, runCmd := range runCommands {
+			cmd, _ := runCmd.(string)
+			manifest.RunCommands = append(manifest.RunCommands, cmd)
+		}
+	}
 }

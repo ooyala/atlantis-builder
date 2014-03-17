@@ -10,6 +10,7 @@ import (
 	"manifest"
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
@@ -131,7 +132,12 @@ func runJavaPrebuild(sourceDir, javaType string) {
 }
 
 func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Layers) {
-	cloneDir, err := ioutil.TempDir("/tmp/", path.Base(buildURL))
+	usr, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	cloneDir, err := ioutil.TempDir(usr.HomeDir, path.Base(buildURL))
 	if err != nil {
 		panic(err)
 	}

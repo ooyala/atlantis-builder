@@ -23,18 +23,47 @@ func New(url string) *Client {
 	return &Client{URL: url, client: dockerClient}
 }
 
-func (c *Client) ImageExists(imageName string) bool {
-	imageName = c.URL + "/" + imageName
-
-	if _, err := c.client.InspectImage(imageName); err == nil {
-		return true
-	} else if err == docker.ErrNoSuchImage {
-		return false
-	} else {
-		panic(err)
+func (c *Client) PullImage(repository string) bool {
+	pullOpts := docker.PullImageOptions{
+		Repository:c.URL + "/" + repository,
+		Registry:  c.URL,
 	}
 
-	panic("unreachable")
+	err := c.client.PullImage(pullOpts)
+	switch err {
+	case docker.ErrNoSuchImage:
+		return false
+	case nil:
+		return true
+	}
+
+	panic(err)
+}
+
+func (c *Client) PushImage(repository string) {
+	pushOpts := docker.PushImageOptions{
+		Name: c.URL + "/" + repository,
+		Registry: c.URL,
+	}
+	authConf := docker.AuthConfiguration{}
+
+	if err := c.client.PushImage(pushOpts, authConf); err != nil {
+		panic(err)
+	}	
+}
+
+func (c *Client) ImageExists(repository string) bool {
+	imageName := c.URL + "/" + repository
+
+	_, err := c.client.InspectImage(imageName)
+	switch err {
+	case docker.ErrNoSuchImage:
+		return c.PullImage(repository)
+	case nil:
+		return true
+	}
+
+	panic(err)
 }
 
 func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, tout time.Duration, runScript ...string) {
@@ -113,8 +142,4 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 	// NOTE(jigish) Should we pass the bind mount and port configuration here during the build?
 	opts := docker.CommitContainerOptions{Container: container.ID, Repository: c.URL + "/" + imageTo, Run: &docker.Config{}}
 	c.client.CommitContainer(opts)
-}
-
-func (c *Client) PushImage(image string) error {
-	return nil
 }

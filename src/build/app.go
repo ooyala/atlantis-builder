@@ -182,4 +182,5 @@ func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Laye
 		runJavaPrebuild(overlayDir, manifest.JavaType)
 	}
 	client.OverlayAndCommit(builderLayer, appDockerName, overlayDir, "/overlay", 5*time.Minute, "/etc/atlantis/scripts/build", "/overlay")
+	client.PushImage(appDockerName, true)
 }

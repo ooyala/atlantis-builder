@@ -3,6 +3,7 @@ package docker
 import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
+	"io/ioutil"
 	"os"
 	"path"
 	"time"
@@ -40,10 +41,15 @@ func (c *Client) PullImage(repository string) bool {
 	panic(err)
 }
 
-func (c *Client) PushImage(repository string) {
+func (c *Client) PushImage(repository string, stream bool) {
 	pushOpts := docker.PushImageOptions{
 		Name: c.URL + "/" + repository,
 		Registry: c.URL,
+	}
+	if stream {
+		pushOpts.OutputStream = os.Stdout
+	} else {
+		pushOpts.OutputStream = ioutil.Discard
 	}
 	authConf := docker.AuthConfiguration{}
 

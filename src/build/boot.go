@@ -16,7 +16,7 @@ type Layers struct {
 }
 
 func (l *Layers) builderLayerName(appType string) string {
-	return fmt.Sprintf("builder/%s/%s-%s", l.BaseLayer, appType, l.Version)
+	return fmt.Sprintf("builder/%s-%s-%s", l.BaseLayer, appType, l.Version)
 }
 
 func (l *Layers) BuilderLayerName(appType string) (string, error) {
@@ -42,7 +42,7 @@ func Boot(client *docker.Client, overlayDir string, layers *Layers) {
 		go func(myType string) {
 			fmt.Printf("\tstart %s -> %s\n", layers.BaseLayerName(), layers.builderLayerName(myType))
 			client.OverlayAndCommit(layers.BaseLayerName(), layers.builderLayerName(myType), path.Join(builderLayers, myType), "/overlay", 10*time.Minute, "/overlay/sbin/provision_type", "/overlay")
-			client.PushImage(layers.builderLayerName(myType))
+			client.PushImage(layers.builderLayerName(myType), false)
 			fmt.Printf("\tdone %s\n ", layers.builderLayerName(myType))
 			wg.Done()
 		}(appType)

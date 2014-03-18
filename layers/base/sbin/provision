@@ -14,7 +14,7 @@ apt-get install -y runit
 
 # Add SSH under runit
 apt-get install -y openssh-server
-ln -s /etc/sv/sshd /etc/service/
+ln -sf /etc/sv/sshd /etc/service/
 
 # Add rsyslog under runit
 apt-get install -y rsyslog

@@ -36,7 +36,7 @@ fi
 IMAGE_NAME=$(cat $OVERLAY_DIR/basename.txt)-$(cat $OVERLAY_DIR/version.txt)
 
 # Extract files from the image.
-mkdir -p /tmp/base
+rm -rf /tmp/base && mkdir -p /tmp/base
 tar -C /tmp/base -xf $IMPORT_IMAGE
 
 # Run the provisioning script.

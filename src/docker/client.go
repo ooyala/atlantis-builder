@@ -31,15 +31,9 @@ func (c *Client) PullImage(repository string) bool {
 		OutputStream: os.Stdout,
 	}
 
-	err := c.client.PullImage(pullOpts)
-	switch err {
-	case docker.ErrNoSuchImage:
-		return false
-	case nil:
-		return true
-	}
-
-	panic(err)
+	// If PullImage succeeds, image exists and
+	// we return true.
+	return c.client.PullImage(pullOpts) == nil
 }
 
 func (c *Client) PushImage(repository string, stream bool) {

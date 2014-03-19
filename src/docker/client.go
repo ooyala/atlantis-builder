@@ -26,8 +26,8 @@ func New(url string) *Client {
 
 func (c *Client) PullImage(repository string) bool {
 	pullOpts := docker.PullImageOptions{
-		Repository:c.URL + "/" + repository,
-		Registry:  c.URL,
+		Repository: c.URL + "/" + repository,
+		Registry:   c.URL,
 	}
 
 	err := c.client.PullImage(pullOpts)
@@ -43,7 +43,7 @@ func (c *Client) PullImage(repository string) bool {
 
 func (c *Client) PushImage(repository string, stream bool) {
 	pushOpts := docker.PushImageOptions{
-		Name: c.URL + "/" + repository,
+		Name:     c.URL + "/" + repository,
 		Registry: c.URL,
 	}
 	if stream {
@@ -55,7 +55,7 @@ func (c *Client) PushImage(repository string, stream bool) {
 
 	if err := c.client.PushImage(pushOpts, authConf); err != nil {
 		panic(err)
-	}	
+	}
 }
 
 func (c *Client) ImageExists(repository string) bool {

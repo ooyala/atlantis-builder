@@ -24,4 +24,6 @@ pushd /app
 popd
 chown -R user1:user1 /app
 
+truncate -s 0 /etc/resolv.conf
+
 echo "done building app"

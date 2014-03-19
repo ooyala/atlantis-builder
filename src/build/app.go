@@ -181,7 +181,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 
 	copyApp(overlayDir, sourceDir)
 
-	appDockerName := fmt.Sprintf("app/%s-%s", manifest.Name, gitInfo.Sha)
+	appDockerName := fmt.Sprintf("apps/%s-%s", manifest.Name, gitInfo.Sha)
 
 	if client.ImageExists(appDockerName) {
 		if os.Getenv("REBUILD_IMAGE") == "" {

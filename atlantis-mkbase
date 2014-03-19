@@ -41,7 +41,9 @@ tar -C /tmp/base -xf $IMPORT_IMAGE
 
 # Run the provisioning script.
 cp -dR --preserve=mode $OVERLAY_DIR/base/. /tmp/base/
+cp -f /etc/resolv.conf /tmp/base/etc/resolv.conf
 chroot /tmp/base /bin/bash -c "su - -c /sbin/provision"
+truncate -s 0 /tmp/base/etc/resolv.conf
 
 # Push the image to docker registry.
 tar -C /tmp/base -c . | docker import - $REGISTRY/base/$IMAGE_NAME

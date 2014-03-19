@@ -131,7 +131,7 @@ func runJavaPrebuild(sourceDir, javaType string) {
 	}
 }
 
-func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Layers) {
+func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, layers *Layers) {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -151,6 +151,21 @@ func App(client *docker.Client, buildURL, buildSha, relPath string, layers *Laye
 	if _, err := os.Stat(fname); os.IsNotExist(err) {
 		panic(err)
 	}
+
+	// copy manifest
+	copyFile, err := os.Create(path.Join(manifestDir, "manifest.toml"))
+	if err != nil {
+		panic(err)
+	}
+	manFile, err := os.Open(fname)
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(copyFile, manFile)
+	manFile.Close()
+	copyFile.Close()
+
+	// read manifest
 	manifest := manifest.Read(fname)
 
 	builderLayer, err := layers.BuilderLayerName(manifest.AppType)

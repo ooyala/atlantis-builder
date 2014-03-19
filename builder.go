@@ -52,6 +52,7 @@ func main() {
 	var url = flag.String("url", "", "url of git repo")
 	var sha = flag.String("sha", "", "git sha to build")
 	var rel = flag.String("rel", "", "relative path in repository to build")
+	var manifestDir = flag.String("manifest-dir", "", "the directory to copy the manifest to")
 	flag.Parse()
 
 	registry := os.Getenv("REGISTRY")
@@ -69,9 +70,9 @@ func main() {
 		}
 	} else {
 		docker.LogOutput = true
-		if *url == "" || *sha == "" || *rel == "" {
-			panic("provide url, sha and rel path!")
+		if *url == "" || *sha == "" || *rel == "" || *manifestDir == "" {
+			panic("provide url, sha, rel path, and manifest dir!")
 		}
-		build.App(client, *url, *sha, *rel, readLayerInfo(*path))
+		build.App(client, *url, *sha, *rel, *manifestDir, readLayerInfo(*path))
 	}
 }

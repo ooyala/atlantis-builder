@@ -1,7 +1,7 @@
 package build
 
 import (
-	"docker"
+	"atlantis/builder/docker"
 	"errors"
 	"fmt"
 	"path"

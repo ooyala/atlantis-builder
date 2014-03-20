@@ -1,8 +1,8 @@
 package main
 
 import (
-	"build"
-	"docker"
+	"atlantis/builder/build"
+	"atlantis/builder/docker"
 	"flag"
 	"fmt"
 	"io/ioutil"

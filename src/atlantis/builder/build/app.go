@@ -1,22 +1,22 @@
 package build
 
 import (
-	"docker"
+	"atlantis/builder/docker"
+	"atlantis/builder/git"
+	"atlantis/builder/manifest"
+	"atlantis/builder/template"
+	"atlantis/builder/util"
 	"encoding/json"
 	"fmt"
-	"git"
 	"io"
 	"io/ioutil"
-	"manifest"
 	"os"
 	"os/exec"
 	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
-	"template"
 	"time"
-	"util"
 )
 
 // NOTE(manas) This programs panics in places you'd expect it to call log.Fatal(). The panic allows

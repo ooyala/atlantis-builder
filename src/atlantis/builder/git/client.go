@@ -1,10 +1,10 @@
 package git
 
 import (
+	"atlantis/builder/util"
 	"os"
 	"os/exec"
 	"strings"
-	"util"
 )
 
 type Info struct {

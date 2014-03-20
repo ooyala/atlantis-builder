@@ -15,7 +15,7 @@ type Data struct {
 	RunCommands   []string `toml:"run_commands"`
 	Dependencies  []string `toml:"dependencies"`
 	SetupCommands []string `toml:"setup_commands"`
-	CpuShares     uint     `toml:"cpu_shares"`
+	CPUShares     uint     `toml:"cpu_shares"`
 	MemoryLimit   uint     `toml:"memory_limit"`
 
 	// FIXME(manas) Deprecated, TBD.

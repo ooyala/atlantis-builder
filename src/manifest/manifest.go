@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"io"
 	"strings"
 	// vendored packages
 	"github.com/BurntSushi/toml"
@@ -22,14 +23,24 @@ type Data struct {
 	RunCommand interface{} `toml:"run_command"`
 }
 
-func Read(fname string) Data {
+func Read(r io.Reader) (*Data, error) {
 	var manifest Data
-	if _, err := toml.DecodeFile(fname, &manifest); err != nil {
-		panic(err)
+	if _, err := toml.DecodeReader(r, &manifest); err != nil {
+		return nil, err
 	}
 
 	fixCompat(&manifest)
-	return manifest
+	return &manifest, nil
+}
+
+func ReadFile(fname string) (*Data, error) {
+	var manifest Data
+	if _, err := toml.DecodeFile(fname, &manifest); err != nil {
+		return nil, err
+	}
+
+	fixCompat(&manifest)
+	return &manifest, nil
 }
 
 func fixCompat(manifest *Data) {

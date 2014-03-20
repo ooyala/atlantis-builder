@@ -61,7 +61,7 @@ func copyApp(overlayDir, sourceDir string) {
 	}
 }
 
-func writeConfigs(overlayDir string, manifest manifest.Data) {
+func writeConfigs(overlayDir string, manifest *manifest.Data) {
 	for idx, cmd := range manifest.RunCommands {
 		// create /etc/sv/app0
 		relPath := fmt.Sprintf("/etc/sv/app%d", idx)
@@ -166,7 +166,10 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	copyFile.Close()
 
 	// read manifest
-	manifest := manifest.Read(fname)
+	manifest, err := manifest.ReadFile(fname)
+	if err != nil {
+		panic(err)
+	}
 
 	builderLayer, err := layers.BuilderLayerName(manifest.AppType)
 	if err != nil {

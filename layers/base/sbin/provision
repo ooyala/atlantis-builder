@@ -21,7 +21,7 @@ apt-get install -y rsyslog
 ln -s /etc/sv/rsyslog /etc/service
 
 # Add convenience packages
-apt-get -y install curl telnet screen less strace mtr tcpdump vim
+apt-get -y install curl telnet screen less strace mtr tcpdump vim build-essential
 
 # Add app user
 useradd -d /home/user1 -m -s /bin/bash user1

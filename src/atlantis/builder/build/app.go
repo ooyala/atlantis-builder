@@ -189,7 +189,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	if client.ImageExists(appDockerName) {
 		if os.Getenv("REBUILD_IMAGE") == "" {
 			fmt.Println("Image exists!")
-			os.Exit(0)
+			return
 		}
 	}
 

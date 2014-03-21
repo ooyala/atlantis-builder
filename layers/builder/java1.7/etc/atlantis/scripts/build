@@ -16,7 +16,7 @@ fi
 mkdir -p /app/target
 mkdir -p /app/config
 
-find /src/target -name \*.jar /app/target
+find /src/target -name \*.jar -exec mv {} /app/target/ \;
 cp -R /src/config /app/config
 
 pushd /app

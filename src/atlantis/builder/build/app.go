@@ -22,7 +22,7 @@ import (
 // NOTE(manas) This programs panics in places you'd expect it to call log.Fatal(). The panic allows
 // the deferred clean up functions in main() to execute before the program dies.
 
-func copyApp(overlayDir, sourceDir string) {
+func copyApp(overlayDir, sourceDir string) string {
 	appDir := path.Join(overlayDir, "/src")
 	if err := os.MkdirAll(appDir, 0700); err != nil {
 		panic(err)
@@ -59,6 +59,8 @@ func copyApp(overlayDir, sourceDir string) {
 	if err := filepath.Walk(sourceDir, walk); err != nil {
 		panic(err)
 	}
+
+	return appDir
 }
 
 func writeConfigs(overlayDir string, manifest *manifest.Data) {
@@ -117,18 +119,31 @@ func writeInfo(overlayDir string, gitInfo git.Info) {
 	}
 }
 
-func runJavaPrebuild(sourceDir, javaType string) {
-	if err := os.Chdir(sourceDir); err != nil {
-		panic(err)
-	}
+func runJavaPrebuild(appDir, javaType string) {
+	var cmd *exec.Cmd
 	switch javaType {
 	case "scala":
-		cmd := exec.Command("sbt", "assembly")
-		util.EchoExec(cmd)
+		cmd = exec.Command("sbt", "assembly")
 	case "maven":
-		cmd := exec.Command("mvn", "build")
-		util.EchoExec(cmd)
+		cmd = exec.Command("mvn", "build")
 	}
+	cmd.Dir = appDir
+	util.EchoExec(cmd)
+}
+
+func copyManifest(manifestDir, fname string) {
+	// copy manifest
+	copyFile, err := os.Create(path.Join(manifestDir, "manifest.toml"))
+	if err != nil {
+		panic(err)
+	}
+	manFile, err := os.Open(fname)
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(copyFile, manFile)
+	manFile.Close()
+	copyFile.Close()
 }
 
 func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, layers *Layers) {
@@ -147,42 +162,30 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 
 	sourceDir := path.Join(cloneDir, relPath)
 
-	fname := path.Join(sourceDir, "manifest.toml")
-	if _, err := os.Stat(fname); os.IsNotExist(err) {
+	manifestFname := path.Join(sourceDir, "manifest.toml")
+	if _, err := os.Stat(manifestFname); os.IsNotExist(err) {
 		panic(err)
 	}
-
-	// copy manifest
-	copyFile, err := os.Create(path.Join(manifestDir, "manifest.toml"))
-	if err != nil {
-		panic(err)
-	}
-	manFile, err := os.Open(fname)
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(copyFile, manFile)
-	manFile.Close()
-	copyFile.Close()
 
 	// read manifest
-	manifest, err := manifest.ReadFile(fname)
+	manifest, err := manifest.ReadFile(manifestFname)
 	if err != nil {
 		panic(err)
 	}
+	copyManifest(manifestDir, manifestFname)
 
 	builderLayer, err := layers.BuilderLayerName(manifest.AppType)
 	if err != nil {
 		panic(err)
 	}
 
-	overlayDir, err := ioutil.TempDir("/tmp", manifest.Name)
+	overlayDir, err := ioutil.TempDir(usr.HomeDir, manifest.Name)
 	if err != nil {
 		panic(err)
 	}
 	defer os.RemoveAll(overlayDir)
 
-	copyApp(overlayDir, sourceDir)
+	appDir := copyApp(overlayDir, sourceDir)
 
 	appDockerName := fmt.Sprintf("apps/%s-%s", manifest.Name, gitInfo.Sha)
 
@@ -197,7 +200,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	writeConfigs(overlayDir, manifest)
 
 	if manifest.AppType == "java1.7" {
-		runJavaPrebuild(overlayDir, manifest.JavaType)
+		runJavaPrebuild(appDir, manifest.JavaType)
 	}
 	client.OverlayAndCommit(builderLayer, appDockerName, overlayDir, "/overlay", 5*time.Minute, "/etc/atlantis/scripts/build", "/overlay")
 	client.PushImage(appDockerName, true)

@@ -31,4 +31,7 @@ if [ -x "/sbin/provision-custom" ]; then
 	exec /sbin/provision-custom
 fi
 
+# Create key dir /root/.ssh
+mkdir -p /root/.ssh/authorized_keys.d
+
 echo "done provisioning base"

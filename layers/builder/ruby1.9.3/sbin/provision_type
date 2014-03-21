@@ -6,7 +6,7 @@ cp -dR --preserve=mode $OVERLAY/* /
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y ruby1.9.3 ruby1.9.1-dev
+apt-get install -y build-essential ruby1.9.3 ruby1.9.1-dev
 
 echo "gem: --no-ri --no-rdoc" > /root/.gemrc
 gem install bundler

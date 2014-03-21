@@ -27,10 +27,7 @@ useradd -d /home/user1 -m -s /bin/bash user1
 
 # run provision-custom if it exists
 if [ -x "/sbin/provision-custom" ]; then
-	exec /sbin/provision-custom
+	/sbin/provision-custom
 fi
-
-# Create key dir /root/.ssh
-mkdir -p /root/.ssh/authorized_keys.d
 
 echo "done provisioning base"

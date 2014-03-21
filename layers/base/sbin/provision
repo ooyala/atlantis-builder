@@ -1,6 +1,5 @@
 #!/bin/bash -ex
-exec | tee /sbin/provision.log
-exec 2>&1
+exec > /sbin/provision.log 2>&1
 
 export DEBIAN_FRONTEND=noninteractive
 

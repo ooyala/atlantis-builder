@@ -121,6 +121,7 @@ func writeInfo(overlayDir string, gitInfo git.Info) {
 
 func runJavaPrebuild(appDir, javaType string) {
 	var cmd *exec.Cmd
+
 	switch javaType {
 	case "scala":
 		cmd = exec.Command("sbt", "assembly")
@@ -129,6 +130,17 @@ func runJavaPrebuild(appDir, javaType string) {
 	}
 	cmd.Dir = appDir
 	util.EchoExec(cmd)
+
+	walk := func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() || strings.HasSuffix(path, ".jar") {
+			return nil
+		} else {
+			return os.RemoveAll(path)
+		}
+	}
+	if err := filepath.Walk(path.Join(appDir, "target"), walk); err != nil {
+		panic(err)
+	}
 }
 
 func copyManifest(manifestDir, fname string) {
@@ -137,13 +149,15 @@ func copyManifest(manifestDir, fname string) {
 	if err != nil {
 		panic(err)
 	}
+	defer copyFile.Close()
+
 	manFile, err := os.Open(fname)
 	if err != nil {
 		panic(err)
 	}
+	defer manFile.Close()
+
 	io.Copy(copyFile, manFile)
-	manFile.Close()
-	copyFile.Close()
 }
 
 func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, layers *Layers) {

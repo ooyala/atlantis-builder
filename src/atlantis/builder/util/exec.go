@@ -18,7 +18,9 @@ func EchoExec(cmd *exec.Cmd) []byte {
 	if err := cmd.Start(); err != nil {
 		panic(err)
 	}
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		panic(err)
+	}
 
 	return buf.Bytes()
 }

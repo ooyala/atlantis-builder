@@ -14,10 +14,9 @@ if [ -d /src/check_mk_checks ]; then
 fi
 
 mkdir -p /app/target
-mkdir -p /app/config
 
 find /src/target -name \*.jar -exec mv {} /app/target/ \;
-cp -R /src/config /app/config
+cp -R /src/config /app/
 
 pushd /app
   /etc/atlantis/scripts/setup

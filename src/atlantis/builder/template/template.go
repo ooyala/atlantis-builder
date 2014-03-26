@@ -27,8 +27,8 @@ func WriteRunitScript(path string, cmd string, idx int) {
 }
 
 const RsyslogTemplate = `# config for app{{.}}
-$template                   logFormat,"%msg%\n"
-$ActionFileDefaultTemplate  logFormat
+$template logFormat,"%msg%\n"
+$ActionFileDefaultTemplate logFormat
 
 $outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/stdout.log,10485760,/etc/logrot
 $outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/logrot

@@ -86,7 +86,7 @@ func writeConfigs(overlayDir string, manifest *manifest.Data) {
 		// write /etc/rsyslog.d/00.conf
 		relPath := fmt.Sprintf("/etc/rsyslog.d/%02d.conf", idx)
 		absPath := path.Join(overlayDir, relPath)
-		template.WriteRsyslogConfig(absPath, idx)
+		template.WriteRsyslogAppConfig(absPath, idx)
 	}
 
 	// create /etc/atlantis/scripts

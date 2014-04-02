@@ -34,7 +34,7 @@ local{{.}}.=info  :omfile:$app{{.}}Info
 local{{.}}.=error :omfile:$app{{.}}Error
 `
 
-func WriteRsyslogConfig(path string, idx int) {
+func WriteRsyslogAppConfig(path string, idx int) {
 	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogTemplate))
 	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
 		panic(err)

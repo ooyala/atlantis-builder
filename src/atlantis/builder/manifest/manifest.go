@@ -8,19 +8,32 @@ import (
 )
 
 type Data struct {
-	Name          string   `toml:"name"`
-	Description   string   `toml:"description"`
-	Internal      bool     `toml:"internal"`
-	AppType       string   `toml:"app_type"`
-	JavaType      string   `toml:"java_type"`
-	RunCommands   []string `toml:"run_commands"`
-	Dependencies  []string `toml:"dependencies"`
-	SetupCommands []string `toml:"setup_commands"`
-	CPUShares     uint     `toml:"cpu_shares"`
-	MemoryLimit   uint     `toml:"memory_limit"`
+	Name          string              `toml:"name"`
+	Description   string              `toml:"description"`
+	Internal      bool                `toml:"internal"`
+	AppType       string              `toml:"app_type"`
+	JavaType      string              `toml:"java_type"`
+	RunCommands   []string            `toml:"run_commands"`
+	Dependencies  []string            `toml:"dependencies"`
+	SetupCommands []string            `toml:"setup_commands"`
+	CPUShares     uint                `toml:"cpu_shares"`
+	MemoryLimit   uint                `toml:"memory_limit"`
+	Logging       map[string]logGroup `toml:"logging"`
 
 	// FIXME(manas) Deprecated, TBD.
 	RunCommand interface{} `toml:"run_command"`
+}
+
+type logGroup struct {
+	Name   string
+	Panic  string
+	Alert  string
+	Crit   string
+	Error  string
+	Warn   string
+	Notice string
+	Info   string
+	Debug  string
 }
 
 func Read(r io.Reader) (*Data, error) {

@@ -1,6 +1,7 @@
 package template
 
 import (
+	"atlantis/builder/manifest"
 	"os"
 	"text/template"
 )
@@ -26,7 +27,7 @@ func WriteRunitScript(path string, cmd string, idx int) {
 	}
 }
 
-const RsyslogTemplate = `# config for app{{.}}
+const RsyslogAppTemplate = `# config for app{{.}}
 $outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/stdout.log,10485760,/etc/logrot
 $outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/logrot
 
@@ -35,11 +36,30 @@ local{{.}}.=error :omfile:$app{{.}}Error
 `
 
 func WriteRsyslogAppConfig(path string, idx int) {
-	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogTemplate))
+	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogAppTemplate))
 	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
 		panic(err)
 	} else {
 		if err := tmpl.Execute(fh, idx); err != nil {
+			panic(err)
+		}
+	}
+}
+
+const RsyslogCustomTemplate = `# config for {{.Name}}
+`
+
+type Fac struct {
+	Name string
+	Desc manifest.Facility
+}
+
+func WriteRsyslogCustomConfig(path string, name string, desc manifest.Facility) {
+	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogCustomTemplate))
+	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
+		panic(err)
+	} else {
+		if err := tmpl.Execute(fh, Fac{name, desc}); err != nil {
 			panic(err)
 		}
 	}

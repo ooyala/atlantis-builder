@@ -18,13 +18,13 @@ type Data struct {
 	SetupCommands []string            `toml:"setup_commands"`
 	CPUShares     uint                `toml:"cpu_shares"`
 	MemoryLimit   uint                `toml:"memory_limit"`
-	Logging       map[string]logGroup `toml:"logging"`
+	Logging       map[string]Facility `toml:"logging"`
 
 	// FIXME(manas) Deprecated, TBD.
 	RunCommand interface{} `toml:"run_command"`
 }
 
-type logGroup struct {
+type Facility struct {
 	Name   string
 	Panic  string
 	Alert  string

@@ -7,6 +7,7 @@ import (
 	"atlantis/builder/template"
 	"atlantis/builder/util"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -87,6 +88,11 @@ func writeConfigs(overlayDir string, manifest *manifest.Data) {
 		relPath := fmt.Sprintf("/etc/rsyslog.d/%02d.conf", idx)
 		absPath := path.Join(overlayDir, relPath)
 		template.WriteRsyslogAppConfig(absPath, idx)
+	}
+
+	numCmds := len(manifest.RunCommands)
+	if numCmds < 1 || numCmds > 8 {
+		panic(errors.New(fmt.Sprintf("Number of run commands must be between 1 and 8. Your manifest declared %d!", numCmds)))
 	}
 
 	// create /etc/atlantis/scripts

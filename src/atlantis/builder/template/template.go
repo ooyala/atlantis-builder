@@ -1,7 +1,6 @@
 package template
 
 import (
-	"atlantis/builder/manifest"
 	"os"
 	"text/template"
 )
@@ -33,6 +32,7 @@ $outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/lo
 
 local{{.}}.=info  :omfile:$app{{.}}Info
 local{{.}}.=error :omfile:$app{{.}}Error
+local{{.}}.=crit  :omfile:$app{{.}}Error
 `
 
 func WriteRsyslogAppConfig(path string, idx int) {
@@ -51,10 +51,10 @@ const RsyslogCustomTemplate = `# config for {{.Name}}
 
 type Fac struct {
 	Name string
-	Desc manifest.Facility
+	Desc map[string]string
 }
 
-func WriteRsyslogCustomConfig(path string, name string, desc manifest.Facility) {
+func WriteRsyslogCustomConfig(path string, name string, desc map[string]string) {
 	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogCustomTemplate))
 	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
 		panic(err)

@@ -84,7 +84,7 @@ func writeConfigs(overlayDir string, manifest *manifest.Data) {
 		panic(err)
 	}
 
-	for idx, _ := range manifest.RunCommands {
+	for idx := range manifest.RunCommands {
 		// write /etc/rsyslog.d/local0.conf
 		relPath := fmt.Sprintf("/etc/rsyslog.d/app%d.conf", idx)
 		absPath := path.Join(overlayDir, relPath)
@@ -105,10 +105,10 @@ func writeConfigs(overlayDir string, manifest *manifest.Data) {
 		facRegex := regexp.MustCompile(facString)
 		for key, val := range manifest.Logging {
 			if facRegex.MatchString(key) {
-				if val.Name == "" {
-					val.Name = key
+				if err := manifest.ValidateFacility(key); err != nil {
+					panic(err)
 				}
-				relPath := fmt.Sprintf("/etc/rsyslog.d/%s.conf", val.Name)
+				relPath := fmt.Sprintf("/etc/rsyslog.d/%s.conf", val["name"])
 				absPath := path.Join(overlayDir, relPath)
 				template.WriteRsyslogCustomConfig(absPath, key, val)
 			} else {

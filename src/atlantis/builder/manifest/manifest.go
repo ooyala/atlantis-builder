@@ -51,15 +51,21 @@ var LoggingKeys = map[string]bool{"name": true, "panic": true, "alert": true, "c
 
 func (man *Data) ValidateFacility(fac string) error {
 	facProps := man.Logging[fac]
+	dirRegex := regexp.MustCompile("^[\\w\\-]+$")
 	fileRegex := regexp.MustCompile("^[\\w\\-.]+$")
 	for key, val := range facProps {
-		if LoggingKeys[strings.ToLower(key)] {
-			if !fileRegex.MatchString(val) {
-				return errors.New(fmt.Sprintf("Invalid file/directory name %s provided in %s %s!", val, fac, key))
+		lkey := strings.ToLower(key)
+		if lkey == "name" {
+			if !dirRegex.MatchString(val) {
+				return errors.New(fmt.Sprintf("Invalid directory name %s provided for %s!", val, fac))
 			}
-			if strings.ToLower(key) == "name" && key != "name" {
+			if key != lkey {
 				facProps["name"] = val
 				delete(facProps, key)
+			}
+		} else if LoggingKeys[lkey] {
+			if !fileRegex.MatchString(val) {
+				return errors.New(fmt.Sprintf("Invalid file name %s provided for %s.%s!", val, fac, key))
 			}
 		} else {
 			return errors.New(fmt.Sprintf("Invalid key %s provided for facility %s! Please only provide name and syslog priorities as keys!", key, fac))

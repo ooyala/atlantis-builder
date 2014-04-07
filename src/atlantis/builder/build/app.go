@@ -7,6 +7,7 @@ import (
 	"atlantis/builder/template"
 	"atlantis/builder/util"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,6 +16,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -82,11 +84,37 @@ func writeConfigs(overlayDir string, manifest *manifest.Data) {
 		panic(err)
 	}
 
-	for idx, _ := range manifest.RunCommands {
-		// write /etc/rsyslog.d/00.conf
-		relPath := fmt.Sprintf("/etc/rsyslog.d/%02d.conf", idx)
+	for idx := range manifest.RunCommands {
+		// write /etc/rsyslog.d/local0.conf
+		relPath := fmt.Sprintf("/etc/rsyslog.d/app%d.conf", idx)
 		absPath := path.Join(overlayDir, relPath)
-		template.WriteRsyslogConfig(absPath, idx)
+		template.WriteRsyslogAppConfig(absPath, idx)
+	}
+
+	numCmds := len(manifest.RunCommands)
+	if numCmds < 1 || numCmds > 8 {
+		panic(errors.New(fmt.Sprintf("Number of run commands must be between 1 and 8. Your manifest declared %d!", numCmds)))
+	}
+
+	if numCmds == 8 {
+		if len(manifest.Logging) != 0 {
+			panic(errors.New("Can't specify custom logging facilities with 8 run commands!"))
+		}
+	} else {
+		facString := fmt.Sprintf("local[%d-7]", numCmds)
+		facRegex := regexp.MustCompile(facString)
+		for key, val := range manifest.Logging {
+			if facRegex.MatchString(key) {
+				if err := manifest.ValidateFacility(key); err != nil {
+					panic(err)
+				}
+				relPath := fmt.Sprintf("/etc/rsyslog.d/%s.conf", val["name"])
+				absPath := path.Join(overlayDir, relPath)
+				template.WriteRsyslogCustomConfig(absPath, key, val)
+			} else {
+				panic(errors.New(fmt.Sprintf("Invalid custom facility specified! Facility must be in %s, but was declared as %s.", facString, key)))
+			}
+		}
 	}
 
 	// create /etc/atlantis/scripts

@@ -1,7 +1,10 @@
 package template
 
 import (
+	"bytes"
+	"fmt"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -26,23 +29,40 @@ func WriteRunitScript(path string, cmd string, idx int) {
 	}
 }
 
-const RsyslogTemplate = `# config for app{{.}}
-$template logFormat,"%msg%\n"
-$ActionFileDefaultTemplate logFormat
-
+const RsyslogAppTemplate = `# config for app{{.}}
 $outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/stdout.log,10485760,/etc/logrot
 $outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/logrot
 
 local{{.}}.=info  :omfile:$app{{.}}Info
 local{{.}}.=error :omfile:$app{{.}}Error
+local{{.}}.=crit  :omfile:$app{{.}}Error
 `
 
-func WriteRsyslogConfig(path string, idx int) {
-	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogTemplate))
+func WriteRsyslogAppConfig(path string, idx int) {
+	tmpl := template.Must(template.New("rsyslog").Parse(RsyslogAppTemplate))
 	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
 		panic(err)
 	} else {
 		if err := tmpl.Execute(fh, idx); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func WriteRsyslogCustomConfig(path string, fac string, desc map[string]string) {
+	name := desc["name"]
+	delete(desc, "name")
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf(`# config for %s on %s\n`, name, fac))
+	for key, val := range desc {
+		key = strings.ToLower(key)
+		buffer.WriteString(fmt.Sprintf(`$outchannel %s%s,/var/log/atlantis/%s/%s.log,10485760,/etc/logrot\n`, fac, key, name, val))
+		buffer.WriteString(fmt.Sprintf(`%s.=%s  :omfile:$%s%s\n`, fac, key, fac, key))
+	}
+	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
+		panic(err)
+	} else {
+		if _, err := fh.Write(buffer.Bytes()); err != nil {
 			panic(err)
 		}
 	}

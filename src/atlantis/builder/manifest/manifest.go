@@ -1,23 +1,27 @@
 package manifest
 
 import (
+	"errors"
+	"fmt"
 	"io"
+	"regexp"
 	"strings"
 	// vendored packages
 	"github.com/BurntSushi/toml"
 )
 
 type Data struct {
-	Name          string   `toml:"name"`
-	Description   string   `toml:"description"`
-	Internal      bool     `toml:"internal"`
-	AppType       string   `toml:"app_type"`
-	JavaType      string   `toml:"java_type"`
-	RunCommands   []string `toml:"run_commands"`
-	Dependencies  []string `toml:"dependencies"`
-	SetupCommands []string `toml:"setup_commands"`
-	CPUShares     uint     `toml:"cpu_shares"`
-	MemoryLimit   uint     `toml:"memory_limit"`
+	Name          string                       `toml:"name"`
+	Description   string                       `toml:"description"`
+	Internal      bool                         `toml:"internal"`
+	AppType       string                       `toml:"app_type"`
+	JavaType      string                       `toml:"java_type"`
+	RunCommands   []string                     `toml:"run_commands"`
+	Dependencies  []string                     `toml:"dependencies"`
+	SetupCommands []string                     `toml:"setup_commands"`
+	CPUShares     uint                         `toml:"cpu_shares"`
+	MemoryLimit   uint                         `toml:"memory_limit"`
+	Logging       map[string]map[string]string `toml:"logging"`
 
 	// FIXME(manas) Deprecated, TBD.
 	RunCommand interface{} `toml:"run_command"`
@@ -43,6 +47,36 @@ func ReadFile(fname string) (*Data, error) {
 	return &manifest, nil
 }
 
+var LoggingKeys = map[string]bool{"name": true, "panic": true, "alert": true, "crit": true, "error": true, "warn": true, "notice": true, "info": true, "debug": true}
+
+func (man *Data) ValidateFacility(fac string) error {
+	facProps := man.Logging[fac]
+	dirRegex := regexp.MustCompile("^[\\w\\-]+$")
+	fileRegex := regexp.MustCompile("^[\\w\\-.]+$")
+	for key, val := range facProps {
+		lkey := strings.ToLower(key)
+		if lkey == "name" {
+			if !dirRegex.MatchString(val) {
+				return errors.New(fmt.Sprintf("Invalid directory name %s provided for %s!", val, fac))
+			}
+			if key != lkey {
+				facProps["name"] = val
+				delete(facProps, key)
+			}
+		} else if LoggingKeys[lkey] {
+			if !fileRegex.MatchString(val) {
+				return errors.New(fmt.Sprintf("Invalid file name %s provided for %s.%s!", val, fac, key))
+			}
+		} else {
+			return errors.New(fmt.Sprintf("Invalid key %s provided for facility %s! Please only provide name and syslog priorities as keys!", key, fac))
+		}
+	}
+	if facProps["name"] == "" {
+		facProps["name"] = fac
+	}
+	return nil
+}
+
 func fixCompat(manifest *Data) {
 	app_type := strings.Split(manifest.AppType, "-")
 	if app_type[0] == "java1.7" && len(app_type) > 1 {
@@ -60,7 +94,7 @@ func fixCompat(manifest *Data) {
 	case []interface{}:
 		manifest.RunCommands = []string{}
 		for _, runCmd := range runCommands {
-			cmd, _ := runCmd.(string)
+			cmd := runCmd.(string)
 			manifest.RunCommands = append(manifest.RunCommands, cmd)
 		}
 	}

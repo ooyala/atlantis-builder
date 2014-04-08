@@ -1,6 +1,7 @@
 package api
 
 import (
+	"atlantis/builder/api/types"
 	"atlantis/builder/build"
 	"atlantis/builder/docker"
 	"atlantis/builder/layers"
@@ -24,15 +25,10 @@ const (
 )
 
 type Build struct {
+	types.Build
 	client      *docker.Client
 	layerPath   string
 	manifestDir string
-	ID          string
-	URL         string
-	Sha         string
-	RelPath     string
-	Status      string
-	Error       interface{}
 }
 
 func (b *Build) Run() {
@@ -55,10 +51,9 @@ func (b *Build) Run() {
 }
 
 type Boot struct {
+	types.Boot
 	client    *docker.Client
 	layerPath string
-	Status    string
-	Error     interface{}
 }
 
 func (b *Boot) Run() {
@@ -130,7 +125,9 @@ func (b *BuilderAPI) PostBootHandler(w http.ResponseWriter, r *http.Request) {
 	b.boot = &Boot{
 		client:    b.client,
 		layerPath: b.LayerPath,
-		Status:    StatusInit,
+		Boot: types.Boot{
+			Status: StatusInit,
+		},
 	}
 	b.Unlock()
 
@@ -147,7 +144,7 @@ func (b *BuilderAPI) PostBootHandler(w http.ResponseWriter, r *http.Request) {
 func (b *BuilderAPI) GetBootHandler(w http.ResponseWriter, r *http.Request) {
 	b.RLock()
 	defer b.RUnlock()
-	body, err := json.Marshal(b.boot)
+	body, err := json.Marshal(b.boot.Boot)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -164,17 +161,20 @@ func (b *BuilderAPI) PostBuildHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b.RUnlock()
 
-	var theBuild Build
-	if err := json.NewDecoder(r.Body).Decode(&theBuild); err != nil {
+	var tbuild types.Build
+	if err := json.NewDecoder(r.Body).Decode(&tbuild); err != nil {
 		http.Error(w, "Error decoding theBuilduest: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	if theBuild.URL == "" || theBuild.Sha == "" || theBuild.RelPath == "" {
+	if tbuild.URL == "" || tbuild.Sha == "" || tbuild.RelPath == "" {
 		http.Error(w, "provide url, sha, and rel path!", http.StatusBadRequest)
 		return
 	}
 
-	theBuild.Status = StatusInit
+	tbuild.Status = StatusInit
+	theBuild := Build{
+		Build: tbuild,
+	}
 	if err := b.reserveBuild(&theBuild); err != nil {
 		// can't create ID, must be a conflict
 		http.Error(w, err.Error(), http.StatusConflict)
@@ -192,7 +192,7 @@ func (b *BuilderAPI) PostBuildHandler(w http.ResponseWriter, r *http.Request) {
 		b.releaseBuild(&theBuild)
 	}()
 
-	body, err := json.Marshal(&theBuild)
+	body, err := json.Marshal(&theBuild.Build)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -210,7 +210,7 @@ func (b *BuilderAPI) GetBuildHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No such build", http.StatusNotFound)
 		return
 	}
-	body, err := json.Marshal(theBuild)
+	body, err := json.Marshal(theBuild.Build)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

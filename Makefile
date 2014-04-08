@@ -21,8 +21,8 @@ export GOPATH
 all: build
 
 build:
-	@go build builder.go
-	@go build builderd.go
+	@go build -o atlantis-builder builder.go
+	@go build -o atlantis-builderd builderd.go
 
 deb: clean build
 	@cp -a deb pkg

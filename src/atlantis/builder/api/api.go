@@ -18,12 +18,6 @@ import (
 	"sync"
 )
 
-const (
-	StatusInit  = "INIT"
-	StatusDone  = "DONE"
-	StatusError = "ERROR"
-)
-
 type Build struct {
 	types.Build
 	client      *docker.Client
@@ -34,7 +28,7 @@ type Build struct {
 func (b *Build) Run() {
 	if err := os.MkdirAll(b.manifestDir, 0755); err != nil {
 		b.Error = err
-		b.Status = StatusError
+		b.Status = types.StatusError
 		return
 	}
 	b.Status = "Building..."
@@ -43,9 +37,9 @@ func (b *Build) Run() {
 	defer func() {
 		if err := recover(); err != nil {
 			b.Error = err
-			b.Status = StatusError
+			b.Status = types.StatusError
 		} else {
-			b.Status = StatusDone
+			b.Status = types.StatusDone
 		}
 	}()
 }
@@ -64,7 +58,7 @@ func (b *Boot) Run() {
 		build.Boot(b.client, b.layerPath, layers.ReadLayerInfo(b.layerPath))
 	} else {
 		b.Error = errors.New(b.layerPath + " does not exist or not a directory")
-		b.Status = StatusError
+		b.Status = types.StatusError
 		return
 	}
 
@@ -72,9 +66,9 @@ func (b *Boot) Run() {
 	defer func() {
 		if err := recover(); err != nil {
 			b.Error = err
-			b.Status = StatusError
+			b.Status = types.StatusError
 		} else {
-			b.Status = StatusDone
+			b.Status = types.StatusDone
 		}
 	}()
 }
@@ -126,7 +120,7 @@ func (b *BuilderAPI) PostBootHandler(w http.ResponseWriter, r *http.Request) {
 		client:    b.client,
 		layerPath: b.LayerPath,
 		Boot: types.Boot{
-			Status: StatusInit,
+			Status: types.StatusInit,
 		},
 	}
 	b.Unlock()
@@ -171,7 +165,7 @@ func (b *BuilderAPI) PostBuildHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tbuild.Status = StatusInit
+	tbuild.Status = types.StatusInit
 	theBuild := Build{
 		Build: tbuild,
 	}
@@ -228,11 +222,11 @@ func (b *BuilderAPI) GetManifestHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "No such build", http.StatusNotFound)
 		return
 	}
-	if theBuild.Status == StatusError {
+	if theBuild.Status == types.StatusError {
 		http.Error(w, "Build Ended with Error", http.StatusBadRequest)
 		return
 	}
-	if theBuild.Status != StatusDone {
+	if theBuild.Status != types.StatusDone {
 		http.Error(w, "Build Not Finished", http.StatusBadRequest)
 		return
 	}

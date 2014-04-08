@@ -1,5 +1,11 @@
 package types
 
+const (
+	StatusInit  = "INIT"
+	StatusDone  = "DONE"
+	StatusError = "ERROR"
+)
+
 type Build struct {
 	ID      string
 	URL     string

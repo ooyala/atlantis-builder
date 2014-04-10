@@ -31,7 +31,6 @@ func (l *Layers) BaseLayerName() string {
 	return fmt.Sprintf("base/%s-%s", l.BaseLayer, l.Version)
 }
 
-// FIXME(manas) Putting this in util creates cyclic imports.
 func ReadLayerInfo(overlayDir string) *Layers {
 	baseFile := path.Join(overlayDir, "basename.txt")
 	baseName, err := ioutil.ReadFile(baseFile)

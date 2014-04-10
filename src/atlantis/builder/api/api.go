@@ -15,8 +15,12 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 	"sync"
 )
+
+// this will ensure only one build happens at a time
+var buildLock = sync.Mutex{}
 
 type Build struct {
 	types.Build
@@ -26,22 +30,31 @@ type Build struct {
 }
 
 func (b *Build) Run() {
+	buildLock.Lock()
 	if err := os.MkdirAll(b.manifestDir, 0755); err != nil {
 		b.Error = err
 		b.Status = types.StatusError
+		buildLock.Unlock()
 		return
 	}
-	b.Status = "Building..."
-	build.App(b.client, b.URL, b.Sha, b.RelPath, b.manifestDir, layers.ReadLayerInfo(b.layerPath))
 	// catch panic
 	defer func() {
 		if err := recover(); err != nil {
+			log.Printf("Error building "+b.URL+"/"+b.RelPath+"@"+b.Sha+": %v", err)
+			// print stack so we can trace the error when it happens
+			buf := []byte{}
+			runtime.Stack(buf, false)
+			fmt.Println(string(buf))
+			// return an error to the client
 			b.Error = err
 			b.Status = types.StatusError
 		} else {
 			b.Status = types.StatusDone
 		}
 	}()
+	defer buildLock.Unlock()
+	b.Status = "Building..."
+	build.App(b.client, b.URL, b.Sha, b.RelPath, b.manifestDir, layers.ReadLayerInfo(b.layerPath))
 }
 
 type Boot struct {

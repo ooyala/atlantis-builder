@@ -3,6 +3,7 @@ package build
 import (
 	"atlantis/builder/docker"
 	"atlantis/builder/git"
+	"atlantis/builder/layers"
 	"atlantis/builder/manifest"
 	"atlantis/builder/template"
 	"atlantis/builder/util"
@@ -188,7 +189,7 @@ func copyManifest(manifestDir, fname string) {
 	io.Copy(copyFile, manFile)
 }
 
-func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, layers *Layers) {
+func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, l *layers.Layers) {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -216,7 +217,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	}
 	copyManifest(manifestDir, manifestFname)
 
-	builderLayer, err := layers.BuilderLayerName(manifest.AppType)
+	builderLayer, err := l.BuilderLayerName(manifest.AppType)
 	if err != nil {
 		panic(err)
 	}

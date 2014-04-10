@@ -3,45 +3,11 @@ package main
 import (
 	"atlantis/builder/build"
 	"atlantis/builder/docker"
+	"atlantis/builder/layers"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
-	"strings"
 )
-
-// FIXME(manas) Putting this in util creates cyclic imports.
-func readLayerInfo(overlayDir string) *build.Layers {
-	baseFile := path.Join(overlayDir, "basename.txt")
-	baseName, err := ioutil.ReadFile(baseFile)
-	if err != nil {
-		panic(err)
-	}
-
-	versionFile := path.Join(overlayDir, "version.txt")
-	versionNumber, err := ioutil.ReadFile(versionFile)
-	if err != nil {
-		panic(err)
-	}
-
-	layersDir := path.Join(overlayDir, "builder")
-	dirs, err := ioutil.ReadDir(layersDir)
-	if err != nil {
-		panic(err)
-	}
-
-	layerNames := []string{}
-	for _, dir := range dirs {
-		layerNames = append(layerNames, dir.Name())
-	}
-
-	return &build.Layers{
-		Version:       strings.TrimRight(string(versionNumber), "\n"),
-		BaseLayer:     strings.TrimRight(string(baseName), "\n"),
-		BuilderLayers: layerNames,
-	}
-}
 
 func main() {
 	// Builder bootstrap.
@@ -64,7 +30,7 @@ func main() {
 	if *boot {
 		fi, err := os.Stat(*path)
 		if err == nil && fi.IsDir() {
-			build.Boot(client, *path, readLayerInfo(*path))
+			build.Boot(client, *path, layers.ReadLayerInfo(*path))
 		} else {
 			fmt.Fprintf(os.Stderr, "%s does not exist or not a directory", *path)
 		}
@@ -73,6 +39,6 @@ func main() {
 		if *url == "" || *sha == "" || *rel == "" || *manifestDir == "" {
 			panic("provide url, sha, rel path, and manifest dir!")
 		}
-		build.App(client, *url, *sha, *rel, *manifestDir, readLayerInfo(*path))
+		build.App(client, *url, *sha, *rel, *manifestDir, layers.ReadLayerInfo(*path))
 	}
 }

@@ -1,8 +1,10 @@
 PROJECT_ROOT := $(shell pwd)
 ifeq ($(shell pwd | xargs dirname | xargs basename),lib)
 	VENDOR_PATH := $(shell pwd | xargs dirname | xargs dirname)/vendor
+	ATLANTIS_PATH := $(shell pwd | xargs dirname | xargs dirname)/lib/atlantis
 else
 	VENDOR_PATH := $(PROJECT_ROOT)/vendor
+	ATLANTIS_PATH := $(PROJECT_ROOT)/lib/atlantis
 endif
 
 ifndef BASENAME
@@ -13,13 +15,14 @@ ifndef VERSION
 	VERSION := "0.1.0"
 endif
 
-GOPATH := $(PROJECT_ROOT):$(VENDOR_PATH)
+GOPATH := $(PROJECT_ROOT):$(VENDOR_PATH):$(ATLANTIS_PATH)
 export GOPATH
 
 all: build
 
 build:
-	@go build
+	@go build -o atlantis-builder builder.go
+	@go build -o atlantis-builderd builderd.go
 
 deb: clean build
 	@cp -a deb pkg

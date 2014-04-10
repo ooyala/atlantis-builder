@@ -53,7 +53,7 @@ func (b *Build) Run() {
 		}
 	}()
 	defer buildLock.Unlock()
-	b.Status = "Building..."
+	b.Status = types.StatusBuilding
 	build.App(b.client, b.URL, b.Sha, b.RelPath, b.manifestDir, layers.ReadLayerInfo(b.layerPath))
 }
 
@@ -64,7 +64,7 @@ type Boot struct {
 }
 
 func (b *Boot) Run() {
-	b.Status = "Booting..."
+	b.Status = types.StatusBooting
 
 	fi, err := os.Stat(b.layerPath)
 	if err == nil && fi.IsDir() {

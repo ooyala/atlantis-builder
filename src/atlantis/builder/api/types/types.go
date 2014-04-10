@@ -1,9 +1,11 @@
 package types
 
 const (
-	StatusInit  = "INIT"
-	StatusDone  = "DONE"
-	StatusError = "ERROR"
+	StatusInit     = "INIT"
+	StatusDone     = "DONE"
+	StatusError    = "ERROR"
+	StatusBuilding = "Building..."
+	StatusBooting  = "Booting..."
 )
 
 type Build struct {

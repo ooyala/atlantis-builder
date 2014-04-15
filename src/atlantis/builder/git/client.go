@@ -51,7 +51,7 @@ func Checkout(url, sha, path string) Info {
 	out = util.EchoExec(cmd)
 	commit := strings.Split(string(out), "\n")[0]
 
-	cmd = exec.Command("git", "log", "--pretty=format:'%H'")
+	cmd = exec.Command("git", "log", "--pretty=format:%H")
 	out = util.EchoExec(cmd)
 	revlist := strings.Split(string(out), "\n")
 

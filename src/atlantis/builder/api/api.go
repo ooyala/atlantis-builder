@@ -101,6 +101,8 @@ type BuilderAPI struct {
 func New(port uint16, registry, layerPath, manifestBaseDir string) *BuilderAPI {
 	return &BuilderAPI{
 		client:          docker.New(registry),
+		builds:          map[string]*Build{},
+		building:        map[string]bool{},
 		Port:            port,
 		LayerPath:       layerPath,
 		ManifestBaseDir: manifestBaseDir,

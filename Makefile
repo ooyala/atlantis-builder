@@ -40,7 +40,7 @@ deb: clean build
 	@dpkg -b pkg .
 
 fmt:
-	@find . -name \*.go -exec go fmt {} \;
+	@find . -path ./vendor -prune -o -name \*.go -exec go fmt {} \;
 
 clean:
 	@rm -rf atlantis-builder pkg *.deb

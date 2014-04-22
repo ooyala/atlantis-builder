@@ -214,7 +214,7 @@ func (b *BuilderAPI) GetBuildHandler(w http.ResponseWriter, r *http.Request) {
 
 	b.RLock()
 	defer b.RUnlock()
-	theBuild := b.builds[vars["ID"]]
+	theBuild := b.builds[vars["id"]]
 	if theBuild == nil {
 		http.Error(w, "No such build", http.StatusNotFound)
 		return
@@ -232,7 +232,7 @@ func (b *BuilderAPI) GetManifestHandler(w http.ResponseWriter, r *http.Request) 
 
 	b.RLock()
 	defer b.RUnlock()
-	theBuild := b.builds[vars["ID"]]
+	theBuild := b.builds[vars["id"]]
 	if theBuild == nil {
 		http.Error(w, "No such build", http.StatusNotFound)
 		return

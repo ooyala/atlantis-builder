@@ -43,4 +43,4 @@ fmt:
 	@find . -name \*.go -exec go fmt {} \;
 
 clean:
-	@rm -rf atlantis-builder pkg *.deb
+	@rm -rf atlantis-builder atlantis-builderd pkg *.deb

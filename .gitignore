@@ -1,5 +1,6 @@
 images/precise/base/provision/ssh/authorized_keys.d
 atlantis-builder
 atlantis-builderd
+atlantis-template
 *.deb
 pkg

@@ -33,6 +33,7 @@ all: build
 build:
 	@go build -o atlantis-builder builder.go
 	@go build -o atlantis-builderd builderd.go
+	@go build -o atlantis-template template.go
 
 deb: clean build
 	@cp -a deb pkg
@@ -45,12 +46,13 @@ deb: clean build
 	@cp -a layers pkg/opt/atlantis/builder/
 	@echo $(BASENAME) > pkg/opt/atlantis/builder/layers/basename.txt
 	@echo $(VERSION) > pkg/opt/atlantis/builder/layers/version.txt
+	@cp atlantis-template pkg/opt/atlantis/builder/layers/base/sbin/
 
-	@sed -ri "s/__VERSION__/$(VERSION)/" pkg/DEBIAN/control 
+	@sed -ri "s/__VERSION__/$(VERSION)/" pkg/DEBIAN/control
 	@dpkg -b pkg .
 
 fmt:
 	@find . -name \*.go -exec go fmt {} \;
 
 clean:
-	@rm -rf atlantis-builder pkg *.deb
+	@rm -rf atlantis-builder atlantis-builderd atlantis-template pkg *.deb

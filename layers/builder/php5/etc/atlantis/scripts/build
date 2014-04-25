@@ -1,0 +1,25 @@
+#!/bin/bash -ex
+exec | tee /etc/atlantis/scripts/build.log
+exec 2>&1
+
+OVERLAY=$1
+cp -dR --preserve=mode $OVERLAY/* /
+
+pushd /etc/service
+  ln -s /etc/sv/app* .
+popd
+
+if [ -d /src/check_mk_checks ]; then
+  mv /src/check_mk_checks /
+fi
+
+make -C /src package
+mv /src/package /app
+rm -rf /src
+
+pushd /app
+  /etc/atlantis/scripts/setup
+popd
+chown -R user1:user1 /app
+
+echo "done building app"

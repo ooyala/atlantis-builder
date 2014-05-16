@@ -120,6 +120,7 @@ func (b *BuilderAPI) Run() {
 		Addr:    fmt.Sprintf(":%d", b.Port),
 		Handler: r,
 	}
+	log.Printf("Starting simple builder on port %d", b.Port)
 	log.Fatal(s.ListenAndServe())
 }
 
@@ -195,6 +196,8 @@ func (b *BuilderAPI) PostBuildHandler(w http.ResponseWriter, r *http.Request) {
 	theBuild.layerPath = b.LayerPath
 	theBuild.manifestDir = path.Join(b.ManifestBaseDir, theBuild.ID)
 	b.RUnlock()
+
+	log.Printf("Created build %s", theBuild.ID)
 
 	go func() {
 		theBuild.Run()

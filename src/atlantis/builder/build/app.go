@@ -201,6 +201,7 @@ func copyManifest(manifestDir, fname string) {
 }
 
 func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string, l *layers.Layers) {
+	fmt.Printf("Building app: %v %v %v\n", buildURL, buildSha, relPath)
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -212,7 +213,9 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	}
 	defer os.RemoveAll(cloneDir)
 
+	fmt.Printf("Checking out: %v %v %v\n", buildURL, buildSha, cloneDir)
 	gitInfo := git.Checkout(buildURL, buildSha, cloneDir)
+	fmt.Printf("Checked out: %v %v %v\n", buildURL, buildSha, cloneDir)
 
 	sourceDir := path.Join(cloneDir, relPath)
 
@@ -221,7 +224,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 		panic(err)
 	}
 
-	// read manifest
+	fmt.Printf("Reading manifest: %v\n", manifestFname)
 	manifest, err := manifest.ReadFile(manifestFname)
 	if err != nil {
 		panic(err)
@@ -245,7 +248,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 
 	if client.ImageExists(appDockerName) {
 		if os.Getenv("REBUILD_IMAGE") == "" {
-			fmt.Println("Image exists!")
+			fmt.Println("Image exists!\n")
 			return
 		}
 	}

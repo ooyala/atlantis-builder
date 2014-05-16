@@ -101,6 +101,8 @@ type BuilderAPI struct {
 func New(port uint16, registry, layerPath, manifestBaseDir string) *BuilderAPI {
 	return &BuilderAPI{
 		client:          docker.New(registry),
+		builds:          map[string]*Build{},
+		building:        map[string]bool{},
 		Port:            port,
 		LayerPath:       layerPath,
 		ManifestBaseDir: manifestBaseDir,
@@ -118,6 +120,7 @@ func (b *BuilderAPI) Run() {
 		Addr:    fmt.Sprintf(":%d", b.Port),
 		Handler: r,
 	}
+	log.Printf("Starting simple builder on port %d", b.Port)
 	log.Fatal(s.ListenAndServe())
 }
 
@@ -194,6 +197,8 @@ func (b *BuilderAPI) PostBuildHandler(w http.ResponseWriter, r *http.Request) {
 	theBuild.manifestDir = path.Join(b.ManifestBaseDir, theBuild.ID)
 	b.RUnlock()
 
+	log.Printf("Created build %s", theBuild.ID)
+
 	go func() {
 		theBuild.Run()
 		b.releaseBuild(&theBuild)
@@ -212,7 +217,7 @@ func (b *BuilderAPI) GetBuildHandler(w http.ResponseWriter, r *http.Request) {
 
 	b.RLock()
 	defer b.RUnlock()
-	theBuild := b.builds[vars["ID"]]
+	theBuild := b.builds[vars["id"]]
 	if theBuild == nil {
 		http.Error(w, "No such build", http.StatusNotFound)
 		return
@@ -230,7 +235,7 @@ func (b *BuilderAPI) GetManifestHandler(w http.ResponseWriter, r *http.Request) 
 
 	b.RLock()
 	defer b.RUnlock()
-	theBuild := b.builds[vars["ID"]]
+	theBuild := b.builds[vars["id"]]
 	if theBuild == nil {
 		http.Error(w, "No such build", http.StatusNotFound)
 		return

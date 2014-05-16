@@ -21,6 +21,7 @@ func (l *Layers) BuilderLayerNameUnsafe(appType string) string {
 func (l *Layers) BuilderLayerName(appType string) (string, error) {
 	for _, t := range l.BuilderLayers {
 		if t == appType {
+			fmt.Printf("Found layer name: %s\n", l.BuilderLayerNameUnsafe(appType))
 			return l.BuilderLayerNameUnsafe(appType), nil
 		}
 	}

@@ -253,6 +253,10 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 		}
 	}
 
+	if !client.ImageExists(builderLayer) {
+		panic("Builder layer doesn't exist: " + builderLayer)
+	}
+
 	writeInfo(overlayDir, gitInfo)
 	writeConfigs(overlayDir, manifest)
 

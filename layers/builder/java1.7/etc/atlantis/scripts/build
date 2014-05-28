@@ -25,12 +25,13 @@ fi
 
 mkdir -p /app/target
 
-find /src/target -name \*.jar -exec mv {} /app/target/ \;
-cp -R /src/config /app/
-
 pushd /app
   /etc/atlantis/scripts/setup
 popd
+
+find /src/target -name \*.jar -exec mv {} /app/target/ \;
+cp -R /src/config /app/
+
 chown -R user1:user1 /app
 
 echo "done building app"

@@ -24,11 +24,12 @@ if [ -d /src/check_mk_checks ]; then
 fi
 mv /src /app
 
-pip install -r /app/requirements.txt
-
 pushd /app
   /etc/atlantis/scripts/setup
 popd
+
+pip install -r /app/requirements.txt
+
 chown -R user1:user1 /app
 
 echo "done building app"

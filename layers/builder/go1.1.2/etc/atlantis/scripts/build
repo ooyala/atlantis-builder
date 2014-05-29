@@ -23,9 +23,7 @@ if [ -d /src/check_mk_checks ]; then
   mv /src/check_mk_checks /
 fi
 
-pushd /app
-  /etc/atlantis/scripts/setup
-popd
+/etc/atlantis/scripts/setup
 
 make -C /src package
 mv /src/package /app

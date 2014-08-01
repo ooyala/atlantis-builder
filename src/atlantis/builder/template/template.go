@@ -45,8 +45,11 @@ $outchannel app{{.}}Info,/var/log/atlantis/app{{.}}/stdout.log,10485760,/etc/log
 $outchannel app{{.}}Error,/var/log/atlantis/app{{.}}/stderr.log,10485760,/etc/logrot
 
 local{{.}}.=info  :omfile:$app{{.}}Info
+& ~
 local{{.}}.=error :omfile:$app{{.}}Error
+& ~
 local{{.}}.=crit  :omfile:$app{{.}}Error
+& ~
 `
 
 func WriteRsyslogAppConfig(path string, idx int) {
@@ -68,7 +71,7 @@ func WriteRsyslogCustomConfig(path string, fac string, desc map[string]string) {
 	for key, val := range desc {
 		key = strings.ToLower(key)
 		buffer.WriteString(fmt.Sprintf(`$outchannel %s%s,/var/log/atlantis/%s/%s.log,10485760,/etc/logrot\n`, fac, key, name, val))
-		buffer.WriteString(fmt.Sprintf(`%s.=%s  :omfile:$%s%s\n`, fac, key, fac, key))
+		buffer.WriteString(fmt.Sprintf(`%s.=%s  :omfile:$%s%s\n& ~\n`, fac, key, fac, key))
 	}
 	if fh, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0500); err != nil {
 		panic(err)

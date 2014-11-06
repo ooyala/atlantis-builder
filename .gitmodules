@@ -6,10 +6,10 @@
 	url = https://github.com/BurntSushi/toml
 [submodule "vendor/src/github.com/gorilla/mux"]
 	path = vendor/src/github.com/gorilla/mux
-	url = ssh://git@github.com/gorilla/mux
+	url = https://github.com/gorilla/mux
 [submodule "lib/atlantis"]
 	path = lib/atlantis
-	url = ssh://git@github.com/ooyala/atlantis
+	url = https://github.com/ooyala/atlantis
 [submodule "vendor/src/github.com/gorilla/context"]
 	path = vendor/src/github.com/gorilla/context
-	url = ssh://git@github.com/gorilla/context
+	url = https://github.com/gorilla/context

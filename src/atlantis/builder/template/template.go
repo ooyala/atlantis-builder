@@ -20,8 +20,7 @@ import (
 )
 
 const RunitTemplate = `#!/bin/bash
-limit nproc   16 64
-limit nofile  512 4096
+ulimit -u 64 -n 4096
 cd /app
 { exec chpst -u user1 {{.Cmd}} | logger -p local{{.Num}}.info; } 2>&1 | logger -p local{{.Num}}.error
 `

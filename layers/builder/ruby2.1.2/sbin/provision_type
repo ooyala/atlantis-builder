@@ -1,0 +1,24 @@
+#!/bin/bash -ex
+## Copyright 2014 Ooyala, Inc. All rights reserved.
+##
+## This file is licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+## except in compliance with the License. You may obtain a copy of the License at
+## http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software distributed under the License is
+## distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and limitations under the License.
+
+exec > /sbin/provision_type.log 2>&1
+
+OVERLAY=$1
+cp -dR --preserve=mode $OVERLAY/* /
+
+export DEBIAN_FRONTEND=noninteractive
+echo 'deb     [arch=amd64] http://apt.sv2.ooyala.com/ruby precise ruby' > /etc/apt/sources.list.d/ruby.list
+
+apt-get update
+apt-get install -y ruby-2.1.2
+
+echo "gem: --no-ri --no-rdoc" > /root/.gemrc
+gem install bundler

@@ -1,4 +1,4 @@
-Package: atlantis-builder
+Package: __PACKAGE__
 Version: __VERSION__
 Section: base
 Priority: Optional

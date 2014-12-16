@@ -30,27 +30,62 @@ export GOPATH
 
 all: build
 
-build:
+build-builder:
 	@go build -o atlantis-builder builder.go
+
+build-builderd:
 	@go build -o atlantis-builderd builderd.go
 
-deb: clean build
-	@cp -a deb pkg
-	@mkdir -p pkg/opt/atlantis/bin
-	@mkdir -p pkg/opt/atlantis/builder
+build: build-builder build-builderd
 
-	@cp atlantis-mkbase pkg/opt/atlantis/bin/
-	@cp atlantis-builder pkg/opt/atlantis/bin/
+DEB_STAGING := $(PROJECT_ROOT)/staging
+PKG_INSTALL_DIR := $(DEB_STAGING)/opt/atlantis
+PKG_BIN_DIR := $(PKG_INSTALL_DIR)/opt/atlantis/bin
 
-	@cp -a layers pkg/opt/atlantis/builder/
-	@echo $(BASENAME) > pkg/opt/atlantis/builder/layers/basename.txt
-	@echo $(VERSION) > pkg/opt/atlantis/builder/layers/version.txt
+deb-builder: clean-builder build-builder
+	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
+	@mkdir -p $(PKG_BIN_DIR)
+	@mkdir -p $(PKG_INSTALL_DIR)/builder
 
-	@sed -ri "s/__VERSION__/$(VERSION)/" pkg/DEBIAN/control 
-	@dpkg -b pkg .
+	@cp atlantis-mkbase $(PKG_BIN_DIR)
+	@cp atlantis-builder $(PKG_BIN_DIR)
+
+	@cp -a layers $(PKG_INSTALL_DIR)/builder/
+	@echo $(BASENAME) > $(PKG_INSTALL_DIR)/builder/layers/basename.txt
+	@echo $(VERSION) > $(PKG_INSTALL_DIR)/builder/layers/version.txt
+
+	@sed -ri "s/__VERSION__/$(VERSION)/" $(DEB_STAGING)/DEBIAN/control 
+	@sed -ri "s/__PACKAGE__/atlantis-builder/" $(DEB_STAGING)/DEBIAN/control 
+	@dpkg -b $(DEB_STAGING) .
+
+deb-builderd: clean-builderd build-builderd
+	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
+	@mkdir -p $(PKG_BIN_DIR)
+	@mkdir -p $(PKG_INSTALL_DIR)/builder
+
+	@cp atlantis-mkbase $(PKG_BIN_DIR)
+	@cp atlantis-builderd $(PKG_BIN_DIR)
+
+	@cp -a layers $(PKG_INSTALL_DIR)/builder/
+	@echo $(BASENAME) > $(PKG_INSTALL_DIR)/builder/layers/basename.txt
+	@echo $(VERSION) > $(PKG_INSTALL_DIR)/builder/layers/version.txt
+
+	@sed -ri "s/__VERSION__/$(VERSION)/" $(DEB_STAGING)/DEBIAN/control 
+	@sed -ri "s/__PACKAGE__/atlantis-builderd/" $(DEB_STAGING)/DEBIAN/control 
+	@dpkg -b $(DEB_STAGING) .
+
+deb: deb-builder deb-builderd
 
 fmt:
 	@find . -path ./vendor -prune -o -name \*.go -exec go fmt {} \;
 
-clean:
-	@rm -rf atlantis-builder pkg *.deb
+clean: 
+cleanall: clean-builder clean-builderd
+
+.PHONY: clean-builder
+clean-builder:
+	@rm -rf atlantis-builder $(DEB_STAGING) pkg atlantis-builder_*.deb
+
+.PHONY: clean-builderd
+clean-builderd:
+	@rm -rf atlantis-builder $(DEB_STAGING) pkg atlantis-builderd_*.deb

@@ -3,7 +3,7 @@ Version: __VERSION__
 Section: base
 Priority: Optional
 Architecture: amd64
-Depends: lxc-docker-0.9.0, git, openjdk-7-jdk
+Depends: lxc-docker (>= 0.9.0), git, openjdk-7-jdk
 Maintainer: appsplat-team@ooyala.com
 Description: Best. Builder. Ever.
  This is atlantis-builder, the application that creates the containers that run on atlantis.

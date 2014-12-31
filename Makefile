@@ -40,19 +40,14 @@ build: build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
 PKG_INSTALL_DIR := $(DEB_STAGING)/opt/atlantis
-PKG_BIN_DIR := $(PKG_INSTALL_DIR)/opt/atlantis/bin
+PKG_BIN_DIR := $(PKG_INSTALL_DIR)/bin
 
 deb-builder: clean-builder build-builder
-	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
+	@mkdir -p $(DEB_STAGING)/DEBIAN
 	@mkdir -p $(PKG_BIN_DIR)
-	@mkdir -p $(PKG_INSTALL_DIR)/builder
 
-	@cp atlantis-mkbase $(PKG_BIN_DIR)
+	@cp -a $(PROJECT_ROOT)/deb/DEBIAN/control $(DEB_STAGING)/DEBIAN/control
 	@cp atlantis-builder $(PKG_BIN_DIR)
-
-	@cp -a layers $(PKG_INSTALL_DIR)/builder/
-	@echo $(BASENAME) > $(PKG_INSTALL_DIR)/builder/layers/basename.txt
-	@echo $(VERSION) > $(PKG_INSTALL_DIR)/builder/layers/version.txt
 
 	@sed -ri "s/__VERSION__/$(VERSION)/" $(DEB_STAGING)/DEBIAN/control
 	@sed -ri "s/__PACKAGE__/atlantis-builder/" $(DEB_STAGING)/DEBIAN/control
@@ -60,11 +55,15 @@ deb-builder: clean-builder build-builder
 
 deb-builderd: clean-builderd build-builderd
 	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
-	@rm $(DEB_STAGING)/DEBIAN/postinst $(DEB_STAGING)/DEBIAN/postrm
-	@rm -rf $(DEB_STAGING)/usr
 	@mkdir -p $(PKG_BIN_DIR)
+	@mkdir -p $(PKG_INSTALL_DIR)/builder
 
+	@cp atlantis-mkbase $(PKG_BIN_DIR)
 	@cp atlantis-builderd $(PKG_BIN_DIR)
+
+	@cp -a layers $(PKG_INSTALL_DIR)/builder/
+	@echo $(BASENAME) > $(PKG_INSTALL_DIR)/builder/layers/basename.txt
+	@echo $(VERSION) > $(PKG_INSTALL_DIR)/builder/layers/version.txt
 
 	@sed -ri "s/__VERSION__/$(VERSION)/" $(DEB_STAGING)/DEBIAN/control
 	@sed -ri "s/__PACKAGE__/atlantis-builderd/" $(DEB_STAGING)/DEBIAN/control

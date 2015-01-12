@@ -40,7 +40,7 @@ build: build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
 PKG_INSTALL_DIR := $(DEB_STAGING)/opt/atlantis
-PKG_BIN_DIR := $(PKG_INSTALL_DIR)/bin
+PKG_BIN_DIR := $(PKG_INSTALL_DIR)/builder/bin
 
 deb-builder: clean-builder build-builder
 	@mkdir -p $(DEB_STAGING)/DEBIAN
@@ -56,7 +56,6 @@ deb-builder: clean-builder build-builder
 deb-builderd: clean-builderd build-builderd
 	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
 	@mkdir -p $(PKG_BIN_DIR)
-	@mkdir -p $(PKG_INSTALL_DIR)/builder
 
 	@cp atlantis-mkbase $(PKG_BIN_DIR)
 	@cp atlantis-builderd $(PKG_BIN_DIR)

@@ -14,6 +14,6 @@ exec > /sbin/provision_type.log 2>&1
 OVERLAY=$1
 cp -dR --preserve=mode $OVERLAY/* /
 
-pushd /usr/local && curl -sL https://golang.org/dl/go1.3.linux-amd64.tar.gz | tar -xz && popd
+pushd /usr/local && curl -sL https://golang.org/dl/go1.4.1.linux-amd64.tar.gz | tar -xz && popd
 pushd /usr/bin && for x in $(find /usr/local/go/bin -type f); do ln -s $x; done && popd
 

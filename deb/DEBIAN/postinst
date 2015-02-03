@@ -1,3 +1,8 @@
 #!/bin/bash -e
 echo 'installing sbt-launch.jar ...'
 curl -Ls http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.7/sbt-launch.jar -o /usr/bin/sbt-launch.jar
+
+echo "reviving builder..."
+cd /etc/service
+ln -s /opt/atlantis/builder atlantis-builder
+echo "builder revived."

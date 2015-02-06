@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "running atlantis-builderd..."
+exec ./bin/atlantis-builderd 2>&1

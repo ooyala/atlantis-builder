@@ -39,6 +39,7 @@ build-builderd:
 build: build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
+
 BUILDER_DIR := $(DEB_STAGING)/opt/atlantis/builder
 PKG_BIN_DIR := $(BUILDER_DIR)/bin
 

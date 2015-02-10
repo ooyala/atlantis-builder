@@ -1,2 +1,3 @@
 #!/bin/bash -e
 rm -f /usr/bin/sbt-launch.jar
+rm -rf /opt/atlantis-builder

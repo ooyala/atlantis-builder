@@ -148,7 +148,7 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 		}
 	case <-time.After(tout):
 		c.client.KillContainer(container.ID)
-		panic(fmt.Sprintf("run script timed out in %s"), tout)
+		panic(fmt.Sprintf("run script timed out in %s", tout))
 	}
 
 	// NOTE(jigish) Should we pass the bind mount and port configuration here during the build?

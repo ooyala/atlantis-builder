@@ -39,8 +39,8 @@ build-builderd:
 build: build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
-PKG_INSTALL_DIR := $(DEB_STAGING)/opt/atlantis
-PKG_BIN_DIR := $(PKG_INSTALL_DIR)/bin
+BUILDER_DIR := $(DEB_STAGING)/opt/atlantis/builder
+PKG_BIN_DIR := $(BUILDER_DIR)/bin
 
 deb-builder: clean-builder build-builder
 	@mkdir -p $(DEB_STAGING)/DEBIAN
@@ -54,16 +54,16 @@ deb-builder: clean-builder build-builder
 	@dpkg -b $(DEB_STAGING) .
 
 deb-builderd: clean-builderd build-builderd
-	@cp -a $(PROJECT_ROOT)/deb $(DEB_STAGING)
-	@mkdir -p $(PKG_BIN_DIR)
-	@mkdir -p $(PKG_INSTALL_DIR)/builder
+	@cp -a $(PROJECT_ROOT)/deb/* $(DEB_STAGING)
+	@mkdir -p $(PKG_BIN_DIR) $(BUILDER_DIR)
 
+	@rm $(PKG_BIN_DIR)/atlantis-builder
 	@cp atlantis-mkbase $(PKG_BIN_DIR)
 	@cp atlantis-builderd $(PKG_BIN_DIR)
 
-	@cp -a layers $(PKG_INSTALL_DIR)/builder/
-	@echo $(BASENAME) > $(PKG_INSTALL_DIR)/builder/layers/basename.txt
-	@echo $(VERSION) > $(PKG_INSTALL_DIR)/builder/layers/version.txt
+	@cp -a layers $(BUILDER_DIR)
+	@echo $(BASENAME) > $(BUILDER_DIR)/layers/basename.txt
+	@echo $(VERSION) > $(BUILDER_DIR)/layers/version.txt
 
 	@sed -ri "s/__VERSION__/$(VERSION)/" $(DEB_STAGING)/DEBIAN/control
 	@sed -ri "s/__PACKAGE__/atlantis-builderd/" $(DEB_STAGING)/DEBIAN/control
@@ -74,8 +74,7 @@ deb: deb-builder deb-builderd
 fmt:
 	@find . -path ./vendor -prune -o -name \*.go -exec go fmt {} \;
 
-clean:
-cleanall: clean-builder clean-builderd
+clean: clean-builder clean-builderd
 
 .PHONY: clean-builder
 clean-builder:

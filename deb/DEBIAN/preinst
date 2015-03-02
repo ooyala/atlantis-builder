@@ -4,4 +4,4 @@ if [ -e /etc/service/atlantis-builder ]; then
   rm /etc/service/atlantis-builder
 fi
 
-mkdir -p /var/log/atlantis/builder
+mkdir -p /var/log/atlantis/builder /etc/atlantis/builder

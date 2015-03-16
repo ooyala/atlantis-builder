@@ -30,7 +30,7 @@ func Boot(client *docker.Client, overlayDir string, l *layers.Layers) {
 		go func(myType string) {
 			fmt.Printf("\tstart %s -> %s\n", l.BaseLayerName(), l.BuilderLayerNameUnsafe(myType))
 			client.OverlayAndCommit(l.BaseLayerName(), l.BuilderLayerNameUnsafe(myType),
-				path.Join(builderLayers, myType), "/overlay", 10*time.Minute, "/overlay/sbin/provision_type",
+				path.Join(builderLayers, myType), "/overlay", 100*time.Minute, "/overlay/sbin/provision_type",
 				"/overlay")
 			client.PushImage(l.BuilderLayerNameUnsafe(myType), false)
 			fmt.Printf("\tdone %s\n ", l.BuilderLayerNameUnsafe(myType))

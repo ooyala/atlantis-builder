@@ -44,7 +44,7 @@ func (c *Client) PullImage(repository string) bool {
 
 	// If PullImage succeeds, image exists and
 	// we return true.
-	return c.client.PullImage(pullOpts) == nil
+	return c.client.PullImage(pullOpts, docker.AuthConfiguration{}) == nil
 }
 
 func (c *Client) PushImage(repository string, stream bool) {

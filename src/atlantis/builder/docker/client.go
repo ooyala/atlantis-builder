@@ -44,7 +44,7 @@ func (c *Client) PullImage(repository string) bool {
 
 	// If PullImage succeeds, image exists and
 	// we return true.
-	return c.client.PullImage(pullOpts) == nil
+	return c.client.PullImage(pullOpts, docker.AuthConfiguration{}) == nil
 }
 
 func (c *Client) PushImage(repository string, stream bool) {
@@ -147,7 +147,7 @@ func (c *Client) OverlayAndCommit(imageFrom, imageTo, bindFrom, bindTo string, t
 			panic(fmt.Sprintf("run script failed: %d", ec))
 		}
 	case <-time.After(tout):
-		c.client.KillContainer(container.ID)
+		c.client.KillContainer(docker.KillContainerOptions{ID: container.ID})
 		panic(fmt.Sprintf("run script timed out in %s", tout))
 	}
 

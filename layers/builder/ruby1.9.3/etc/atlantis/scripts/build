@@ -30,7 +30,11 @@ popd
 
 chown -R user1:user1 /app
 
-bundler install --gemfile /app/Gemfile
-
+# check non-empty vendor/cache folder for local gems
+if [ -d "/app/vendor/cache" ] && test "$(ls -A "/app/vendor/cache")"; then
+  bundle install --local --gemfile /app/Gemfile
+else
+  bundle install --gemfile /app/Gemfile
+fi
 
 echo "done building app"

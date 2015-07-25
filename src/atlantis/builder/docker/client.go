@@ -60,7 +60,12 @@ func (c *Client) PushImage(repository string, stream bool) {
 	authConf := docker.AuthConfiguration{}
 
 	if err := c.client.PushImage(pushOpts, authConf); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "PushImage error: %s\n", err.Error())
+		time.Sleep(time.Duration(30) * time.Second)
+		if err = c.client.PushImage(pushOpts, authConf); err != nil {
+			defer c.client.RemoveImage(repository)
+			panic(err)
+		}
 	}
 }
 

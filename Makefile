@@ -58,7 +58,7 @@ deb-builderd: clean-builderd build-builderd
 	@cp -a $(PROJECT_ROOT)/deb/* $(DEB_STAGING)
 	@mkdir -p $(PKG_BIN_DIR) $(BUILDER_DIR)
 
-	@rm $(PKG_BIN_DIR)/atlantis-builder 
+	@rm -f $(PKG_BIN_DIR)/atlantis-builder 
 	@cp atlantis-mkbase $(PKG_BIN_DIR)
 	@cp atlantis-builderd $(PKG_BIN_DIR)
 

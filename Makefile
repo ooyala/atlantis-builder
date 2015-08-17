@@ -11,10 +11,10 @@
 PROJECT_ROOT := $(shell pwd)
 ifeq ($(shell pwd | xargs dirname | xargs basename),lib)
 	VENDOR_PATH := $(shell pwd | xargs dirname | xargs dirname)/vendor
-	ATLANTIS_PATH := $(shell pwd | xargs dirname | xargs dirname)/lib/atlantis
+	ATLANTIS_PATH := $(shell pwd | xargs dirname | xargs dirname)/vendor/src/atlantis
 else
 	VENDOR_PATH := $(PROJECT_ROOT)/vendor
-	ATLANTIS_PATH := $(PROJECT_ROOT)/lib/atlantis
+	ATLANTIS_PATH := $(PROJECT_ROOT)/vendor/src/atlantis
 endif
 
 ifndef BASENAME
@@ -38,7 +38,7 @@ all: build
 $(VENDOR_PATH):
 	@echo "Installing Dependencies..."
 	@mkdir -p $(VENDOR_PATH) || exit 2
-	@GOPATH=$(VENDOR_PATH) go get github.com/mattn/gom
+	@GOPATH=$(VENDOR_PATH) go get github.com/ghao-ooyala/gom
 	$(GOM) install
 	@echo "Done."
 
@@ -82,7 +82,7 @@ deb-builderd: clean-builderd build-builderd
 	@sed -ri "s/__PACKAGE__/atlantis-builderd/" $(DEB_STAGING)/DEBIAN/control
 	@dpkg -b $(DEB_STAGING) .
 
-deb: deb-builder deb-builderd
+deb: clean deb-builder deb-builderd
 
 fmt:
 	@find . -path ./vendor -prune -o -name \*.go -exec go fmt {} \;

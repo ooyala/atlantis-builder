@@ -11,10 +11,10 @@
 PROJECT_ROOT := $(shell pwd)
 ifeq ($(shell pwd | xargs dirname | xargs basename),lib)
 	VENDOR_PATH := $(shell pwd | xargs dirname | xargs dirname)/vendor
-	ATLANTIS_PATH := $(shell pwd | xargs dirname | xargs dirname)/vendor/src/atlantis
+	ATLANTIS_PATH := $(shell pwd | xargs dirname | xargs dirname)/lib/atlantis
 else
 	VENDOR_PATH := $(PROJECT_ROOT)/vendor
-	ATLANTIS_PATH := $(PROJECT_ROOT)/vendor/src/atlantis
+	ATLANTIS_PATH := $(PROJECT_ROOT)/lib/atlantis
 endif
 
 ifndef BASENAME
@@ -48,7 +48,7 @@ build-builder: $(VENDOR_PATH)
 build-builderd: $(VENDOR_PATH)
 	@go build -o atlantis-builderd builderd.go
 
-build: build-builder build-builderd
+build: clean build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
 BUILDER_DIR := $(DEB_STAGING)/opt/atlantis/builder
@@ -99,3 +99,4 @@ clean-builderd:
 
 clean-dependencies:
 	@rm -rf $(VENDOR_PATH)
+	@rm -rf $(ATLANTIS_PATH)

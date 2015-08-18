@@ -28,15 +28,27 @@ endif
 GOPATH := $(PROJECT_ROOT):$(VENDOR_PATH):$(ATLANTIS_PATH)
 export GOPATH
 
+GOM := $(VENDOR_PATH)/bin/gom
+GOM_VENDOR_NAME := vendor
+export GOM_VENDOR_NAME
+
+
 all: build
 
-build-builder:
+$(VENDOR_PATH):
+	@echo "Installing Dependencies..."
+	@mkdir -p $(VENDOR_PATH) || exit 2
+	@GOPATH=$(VENDOR_PATH) go get github.com/ghao-ooyala/gom
+	$(GOM) install
+	@echo "Done."
+
+build-builder: $(VENDOR_PATH)
 	@go build -o atlantis-builder builder.go
 
-build-builderd:
+build-builderd: $(VENDOR_PATH)
 	@go build -o atlantis-builderd builderd.go
 
-build: build-builder build-builderd
+build: clean build-builder build-builderd
 
 DEB_STAGING := $(PROJECT_ROOT)/staging
 BUILDER_DIR := $(DEB_STAGING)/opt/atlantis/builder
@@ -54,10 +66,11 @@ deb-builder: clean-builder build-builder
 	@dpkg -b $(DEB_STAGING) .
 
 deb-builderd: clean-builderd build-builderd
+	@mkdir -p $(DEB_STAGING)/DEBIAN
 	@cp -a $(PROJECT_ROOT)/deb/* $(DEB_STAGING)
 	@mkdir -p $(PKG_BIN_DIR) $(BUILDER_DIR)
 
-	@rm $(PKG_BIN_DIR)/atlantis-builder
+	@rm -f $(PKG_BIN_DIR)/atlantis-builder
 	@cp atlantis-mkbase $(PKG_BIN_DIR)
 	@cp atlantis-builderd $(PKG_BIN_DIR)
 
@@ -69,12 +82,12 @@ deb-builderd: clean-builderd build-builderd
 	@sed -ri "s/__PACKAGE__/atlantis-builderd/" $(DEB_STAGING)/DEBIAN/control
 	@dpkg -b $(DEB_STAGING) .
 
-deb: deb-builder deb-builderd
+deb: clean deb-builder deb-builderd
 
 fmt:
 	@find . -path ./vendor -prune -o -name \*.go -exec go fmt {} \;
 
-clean: clean-builder clean-builderd
+clean: clean-builder clean-builderd clean-dependencies
 
 .PHONY: clean-builder
 clean-builder:
@@ -83,3 +96,7 @@ clean-builder:
 .PHONY: clean-builderd
 clean-builderd:
 	@rm -rf atlantis-builderd $(DEB_STAGING) pkg atlantis-builderd_*.deb
+
+clean-dependencies:
+	@rm -rf $(VENDOR_PATH)
+	@rm -rf $(ATLANTIS_PATH)

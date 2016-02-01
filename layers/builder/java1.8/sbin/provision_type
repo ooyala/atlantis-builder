@@ -1,0 +1,11 @@
+#!/bin/bash -ex
+exec > /sbin/provision_type.log 2>&1
+
+OVERLAY=$1
+cp -dR --preserve=mode $OVERLAY/* /
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+apt-get install --force-yes -y oracle-java8-installer
+

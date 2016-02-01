@@ -90,7 +90,7 @@ func (man *Data) ValidateFacility(fac string) error {
 
 func fixCompat(manifest *Data) {
 	app_type := strings.Split(manifest.AppType, "-")
-	if app_type[0] == "java1.7" && len(app_type) > 1 {
+	if strings.HasPrefix(app_type[0], "java") && len(app_type) > 1 {
 		manifest.AppType = app_type[0]
 		manifest.JavaType = app_type[1]
 	}

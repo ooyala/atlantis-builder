@@ -166,7 +166,7 @@ func runJavaPrebuild(appDir, javaType string) {
 	case "scala":
 		cmd = exec.Command("sbt", "assembly")
 	case "maven":
-		cmd = exec.Command("mvn", "build")
+		cmd = exec.Command("mvn", "package")
 	}
 	cmd.Dir = appDir
 	util.EchoExec(cmd)
@@ -260,7 +260,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	writeInfo(overlayDir, gitInfo)
 	writeConfigs(overlayDir, manifest)
 
-	if manifest.AppType == "java1.7" {
+	if strings.HasPrefix(manifest.AppType, "java") {
 		runJavaPrebuild(appDir, manifest.JavaType)
 	}
 	client.OverlayAndCommit(builderLayer, appDockerName, overlayDir, "/overlay", 5*time.Minute, "/etc/atlantis/scripts/build", "/overlay")

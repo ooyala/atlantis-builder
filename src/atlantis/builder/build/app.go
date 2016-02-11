@@ -178,7 +178,7 @@ func runJavaPrebuild(appDir, appType, javaType string) {
 	}
 
 	switchJavaCmd.Dir = appDir
-	util.EchoExec(switchJavaCmd)
+	util.EchoExecCanSkipError(switchJavaCmd, true)
 	cmd.Dir = appDir
 	util.EchoExec(cmd)
 

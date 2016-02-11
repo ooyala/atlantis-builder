@@ -13,12 +13,17 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 )
 
 func EchoExec(cmd *exec.Cmd) []byte {
+     return EchoExecCanSkipError(cmd, false)
+}
+
+func EchoExecCanSkipError(cmd *exec.Cmd, ignoreErr bool) []byte {
 	// make streaming copies of stdout
 	var buf bytes.Buffer
 	outWriter := io.MultiWriter(&buf, os.Stdout)
@@ -30,7 +35,12 @@ func EchoExec(cmd *exec.Cmd) []byte {
 		panic(err)
 	}
 	if err := cmd.Wait(); err != nil {
-		panic(err)
+		if !ignoreErr {
+			panic(err)
+		} else {
+			fmt.Printf("cmd execution failed but error ignored\n")
+		}
+
 	}
 
 	return buf.Bytes()

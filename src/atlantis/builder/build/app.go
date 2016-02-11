@@ -159,8 +159,16 @@ func writeInfo(overlayDir string, gitInfo git.Info) {
 	}
 }
 
-func runJavaPrebuild(appDir, javaType string) {
+func runJavaPrebuild(appDir, appType, javaType string) {
 	var cmd *exec.Cmd
+	var switchJavaCmd *exec.Cmd
+
+	switch appType {
+	case "java1.7":
+		switchJavaCmd = exec.Command("sudo", "update-java-alternatives", "-s",  "java-7-oracle")
+	case "java1.8":     
+		switchJavaCmd =	exec.Command("sudo", "update-java-alternatives", "-s",  "java-8-oracle")
+	}
 
 	switch javaType {
 	case "scala":
@@ -168,6 +176,9 @@ func runJavaPrebuild(appDir, javaType string) {
 	case "maven":
 		cmd = exec.Command("mvn", "package")
 	}
+
+	switchJavaCmd.Dir = appDir
+	util.EchoExecCanSkipError(switchJavaCmd, true)
 	cmd.Dir = appDir
 	util.EchoExec(cmd)
 
@@ -261,7 +272,7 @@ func App(client *docker.Client, buildURL, buildSha, relPath, manifestDir string,
 	writeConfigs(overlayDir, manifest)
 
 	if strings.HasPrefix(manifest.AppType, "java") {
-		runJavaPrebuild(appDir, manifest.JavaType)
+		runJavaPrebuild(appDir, manifest.AppType, manifest.JavaType)
 	}
 	client.OverlayAndCommit(builderLayer, appDockerName, overlayDir, "/overlay", 5*time.Minute, "/etc/atlantis/scripts/build", "/overlay")
 	client.PushImage(appDockerName, true)

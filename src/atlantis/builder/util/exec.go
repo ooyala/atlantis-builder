@@ -23,7 +23,7 @@ func EchoExec(cmd *exec.Cmd) []byte {
      return EchoExecCanSkipError(cmd, false)
 }
 
-func EchoExecCanSkipError(cmd *exec.Cmd, ignoreErr bool) []byte {
+func EchoExecCanSkipError(cmd *exec.Cmd, skipErr bool) []byte {
 	// make streaming copies of stdout
 	var buf bytes.Buffer
 	outWriter := io.MultiWriter(&buf, os.Stdout)
@@ -35,10 +35,10 @@ func EchoExecCanSkipError(cmd *exec.Cmd, ignoreErr bool) []byte {
 		panic(err)
 	}
 	if err := cmd.Wait(); err != nil {
-		if !ignoreErr {
-			panic(err)
-		} else {
+		if skipErr {
 			fmt.Printf("cmd execution failed but error ignored\n")
+		} else {
+			panic(err)
 		}
 
 	}

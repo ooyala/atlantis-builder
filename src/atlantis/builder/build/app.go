@@ -165,9 +165,9 @@ func runJavaPrebuild(appDir, appType, javaType string) {
 
 	switch appType {
 	case "java1.7":
-		switchJavaCmd = exec.Command("update-java-alternatives", "-s",  "java-7-oracle")
+		switchJavaCmd = exec.Command("sudo", "update-java-alternatives", "-s",  "java-7-oracle")
 	case "java1.8":     
-		switchJavaCmd =	exec.Command("update-java-alternatives", "-s",  "java-8-oracle")
+		switchJavaCmd =	exec.Command("sudo", "update-java-alternatives", "-s",  "java-8-oracle")
 	}
 
 	switch javaType {
